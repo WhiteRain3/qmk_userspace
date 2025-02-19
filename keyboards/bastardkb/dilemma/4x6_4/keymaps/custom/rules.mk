@@ -3,4 +3,4 @@ ENCODER_MAP_ENABLE = yes
 
 QUANTUM_PAINTER_ENABLE = yes
 QUANTUM_PAINTER_DRIVERS += gc9a01_spi
-SRC += generated/cat.qgf.c
+SRC += generated/pac.qgf.c

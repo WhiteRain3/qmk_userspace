@@ -17,7 +17,7 @@
  */
 #include QMK_KEYBOARD_H
 #include <qp.h>
-#include "generated/cat.qgf.h"
+#include "generated/pac.qgf.h"
 
 enum dilemma_keymap_layers {
     LAYER_BASE = 0,
@@ -133,7 +133,7 @@ void keyboard_post_init_kb(void) {
     // qmk painter-convert-graphics -f pal16 -i pics/cat.jpg -o ./generated/
     display = qp_gc9a01_make_spi_device(240, 240, LCD_CS_PIN, LCD_DC_PIN, LCD_RST_PIN, 2, 0);
     qp_init(display, QP_ROTATION_0);
-    my_image = qp_load_image_mem(gfx_cat);
+    my_image = qp_load_image_mem(gfx_pac);
     if (my_image != NULL) {
         qp_clear(display);
         qp_drawimage(display, (0), (0), my_image);
