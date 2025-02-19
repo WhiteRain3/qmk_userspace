@@ -133,7 +133,7 @@ static painter_image_handle_t my_image;
 void keyboard_post_init_kb(void) {
     display = qp_gc9a01_make_spi_device(240, 240, LCD_CS_PIN, LCD_DC_PIN, LCD_RST_PIN, 4, 0);
     qp_init(display, 0);
-    my_image = qp_load_image_mem(gfx_BlueDisappointment);
+    my_image = qp_load_image_mem(gfx_cat);
     if (my_image != NULL) {
         qp_drawimage(display, 0, 0, my_image);
         qp_flush(display);
