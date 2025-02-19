@@ -23,6 +23,6 @@
 
 #define ENCODER_RESOLUTION 4
 
-#define LCD_RST_PIN GP13
 #define LCD_DC_PIN GP11
 #define LCD_CS_PIN GP12
+#define LCD_RST_PIN GP13
