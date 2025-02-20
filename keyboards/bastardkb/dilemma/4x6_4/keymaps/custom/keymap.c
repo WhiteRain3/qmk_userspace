@@ -130,6 +130,7 @@ painter_device_t display;
 static painter_image_handle_t my_image;
 void keyboard_post_init_kb(void) {
     // https://imageresizer.com/
+    // https://ezgif.com/resize
     // qmk painter-convert-graphics -f pal16 -i pics/cat.jpg -o ./generated/
     display = qp_gc9a01_make_spi_device(240, 240, LCD_CS_PIN, LCD_DC_PIN, LCD_RST_PIN, 2, 0);
     qp_init(display, QP_ROTATION_0);
