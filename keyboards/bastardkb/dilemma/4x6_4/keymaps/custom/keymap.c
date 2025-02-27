@@ -142,6 +142,6 @@ void keyboard_post_init_kb(void) {
         // qp_clear(display);
         // qp_drawimage(display, (0), (0), my_image);
         // qp_flush(display);
-        my_anim = qp_animate(display, (239 - my_image->width), (239 - my_image->height), my_image);
+        my_anim = qp_animate(display, (0), (0), my_image);
     }
 }
