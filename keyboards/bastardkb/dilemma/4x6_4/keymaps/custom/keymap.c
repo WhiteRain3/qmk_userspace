@@ -128,6 +128,9 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 
 painter_device_t display;
 static painter_image_handle_t my_image;
+
+static deferred_token my_anim;
+
 void keyboard_post_init_kb(void) {
     // https://imageresizer.com/
     // https://ezgif.com/resize
@@ -136,8 +139,9 @@ void keyboard_post_init_kb(void) {
     qp_init(display, QP_ROTATION_0);
     my_image = qp_load_image_mem(gfx_pac);
     if (my_image != NULL) {
-        qp_clear(display);
-        qp_drawimage(display, (0), (0), my_image);
-        qp_flush(display);
+        // qp_clear(display);
+        // qp_drawimage(display, (0), (0), my_image);
+        // qp_flush(display);
+        my_anim = qp_animate(display, (239 - my_image->width), (239 - my_image->height), my_image);
     }
 }
