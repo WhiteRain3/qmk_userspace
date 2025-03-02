@@ -38,7 +38,6 @@ enum dilemma_keymap_layers {
 #    define S_D_MOD KC_NO
 #    define SNIPING KC_NO
 #endif  // !POINTING_DEVICE_ENABLE
-#undef POINTING_DEVICE_GESTURES_SCROLL_ENABLE
 
 // clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
