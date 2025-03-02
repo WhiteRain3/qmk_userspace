@@ -11,4 +11,4 @@
 #include <qp.h>
 
 extern const uint32_t gfx_pac_length;
-extern const uint8_t  gfx_pac[965182];
+extern const uint8_t  gfx_pac[454170];
