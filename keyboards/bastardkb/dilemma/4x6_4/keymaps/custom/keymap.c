@@ -72,7 +72,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [LAYER_LOWER] = LAYOUT(
   // ╭────────────────────────────────────────────────────────────────╮ ╭──────────────────────────────────────────────────────╮
-       _______, RGB_TOG, RGB_RMOD,    RGB_MOD,    RGB_VAD,    RGB_VAI,    RGB_HUD, RGB_HUI, RGB_SAD, RGB_SAI, XXXXXXX,  RESETS,
+       _______, RGB_TOG, RGB_RMOD,    RGB_MOD,    RGB_VAD,    RGB_VAI,    RGB_HUD, RGB_HUI, RGB_SAD, RGB_SAI, XXXXXXX, QK_BOOT,
   // ├────────────────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────┤
        XXXXXXX, S(KC_1),  S(KC_2), S(KC_LBRC), S(KC_RBRC),    S(KC_7),    KC_PMNS,   KC_P7,   KC_P8,   KC_P9, KC_PAST, XXXXXXX,
   // ├────────────────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────┤
