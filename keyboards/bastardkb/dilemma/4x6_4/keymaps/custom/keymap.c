@@ -50,7 +50,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // ├──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────┤
         MT_CTES,   KC_A,    KC_R,    KC_S,    KC_T,    KC_G,       KC_M,    KC_N,    KC_E,    KC_I,    KC_O, KC_QUOT,
   // ├──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────┤
-        KC_LSFT,   KC_Z,    KC_X,    KC_C,    KC_D,    KC_V,       KC_K,    KC_H, KC_COMM,  KC_DOT, PT_SLSH,   DF(1),
+        KC_LSFT,   KC_Z,    KC_X,    KC_C,    KC_D,    KC_V,       KC_K,    KC_H, KC_COMM,  KC_DOT, KC_SLSH,   DF(1),
   // ╰──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────╯
                          KC_LGUI, MT_ATDE,  KC_SPC,   LOWER,      RAISE,  KC_ENT, KC_BSPC, KC_MPLY
   //                    ╰───────────────────────────────────╯ ╰───────────────────────────────────╯
@@ -72,9 +72,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [LAYER_LOWER] = LAYOUT(
   // ╭────────────────────────────────────────────────────────────────╮ ╭──────────────────────────────────────────────────────╮
-       _______, RGB_TOG, RGB_RMOD,    RGB_MOD,    RGB_VAD,    RGB_VAI,    RGB_HUD, RGB_HUI, RGB_SAD, RGB_SAI, XXXXXXX,   RESET,
+       _______, RGB_TOG, RGB_RMOD,    RGB_MOD,    RGB_VAD,    RGB_VAI,    RGB_HUD, RGB_HUI, RGB_SAD, RGB_SAI, XXXXXXX,  RESETS,
   // ├────────────────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────┤
-       XXXXXXX, S(KC_1),  S(KC_2), S(KC_LBRC), S(KC_RBRC),    S(KC_7),    KC_PMNS,   KC_P7,   KC_P8,   KC_P9, KC_PAST, KC_NLCK,
+       XXXXXXX, S(KC_1),  S(KC_2), S(KC_LBRC), S(KC_RBRC),    S(KC_7),    KC_PMNS,   KC_P7,   KC_P8,   KC_P9, KC_PAST, XXXXXXX,
   // ├────────────────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────┤
        XXXXXXX, S(KC_3),  S(KC_4),    S(KC_9),    S(KC_0), S(KC_BSLS),    KC_PPLS,   KC_P4,   KC_P5,   KC_P6,  KC_EQL, KC_CAPS,
   // ├────────────────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────────┤
