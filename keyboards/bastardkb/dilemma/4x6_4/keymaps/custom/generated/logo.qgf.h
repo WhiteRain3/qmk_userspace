@@ -11,4 +11,4 @@
 #include <qp.h>
 
 extern const uint32_t gfx_logo_length;
-extern const uint8_t  gfx_logo[2268];
+extern const uint8_t  gfx_logo[11342];
