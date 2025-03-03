@@ -126,19 +126,20 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 
 painter_device_t display;
 static painter_image_handle_t my_image;
-// static deferred_token my_anim;
+static deferred_token my_anim;
 
 void keyboard_post_init_kb(void) {
     // https://imageresizer.com/
     // https://ezgif.com/resize
+    // https://msys.qmk.fm/  -- for the cli to run commands on
     // qmk painter-convert-graphics -f pal2 -i pics/logo.png -o ./generated/
     display = qp_gc9a01_make_spi_device(240, 240, LCD_CS_PIN, LCD_DC_PIN, LCD_RST_PIN, 2, 0);
     qp_init(display, QP_ROTATION_0);
     my_image = qp_load_image_mem(gfx_logo);
     if (my_image != NULL) {
-        qp_clear(display);
-        qp_drawimage(display, (0), (0), my_image);
-        qp_flush(display);
-        // my_anim = qp_animate(display, (0), (0), my_image);
+        // qp_clear(display);
+        // qp_drawimage(display, (0), (0), my_image);
+        // qp_flush(display);
+        my_anim = qp_animate(display, (0), (0), my_image);
     }
 }
