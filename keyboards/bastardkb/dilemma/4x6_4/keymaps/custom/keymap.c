@@ -18,6 +18,7 @@
 #include QMK_KEYBOARD_H
 #include <qp.h>
 #include "generated/logo.qgf.h"
+#include "generated/fira11.qff.h"
 
 enum dilemma_keymap_layers {
     LAYER_BASE = 0,
@@ -141,4 +142,31 @@ void keyboard_post_init_kb(void) {
         qp_flush(display);
         // my_anim = qp_animate(display, (0), (0), my_image);
     }
+}
+
+static painter_font_handle_t my_font;
+layer_state_t layer_state_set_user(layer_state_t state) {
+    // qmk painter-make-font-image --font fonts/Fira-Code-Mono.ttf --size 11 -o ./generated/fira11.png
+    // qmk painter-convert-font-image --input ./generated/fira11.png -f mono4
+    my_image = qp_load_image_mem(gfx_logo);
+    my_font = qp_load_font_mem(font_fira11);
+    if (my_image == NULL || my_font == NULL) return state;
+
+    const char *text;
+    switch (get_highest_layer(state)) {
+        case LAYER_BASE:   text = "Colemak";     break;
+        case LAYER_QWERTY: text = "QWERTY";      break;
+        case LAYER_LOWER:  text = "Symbols";     break;
+        case LAYER_RAISE:  text = "Nav & Fkeys"; break;
+        default:           text = "Undefined";   break;
+    }
+
+    qp_clear(display);
+    qp_drawimage(display, (0), (0), my_image);
+
+    int16_t width = qp_textwidth(my_font, text);
+    qp_drawtext(display, (240 - width), (240 - my_font->line_height), my_font, text);
+    qp_flush(display);
+
+    return state;
 }
