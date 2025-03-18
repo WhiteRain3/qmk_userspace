@@ -235,6 +235,10 @@ uint32_t animate_text(uint32_t trigger, void *ctx) {
         anim_step++;
         anim_token = defer_exec(50, animate_text, NULL);  // ✅ 3 arguments
     }
+    else
+    {
+        anim_step == 0;
+    }
 
     return 0;
 }
