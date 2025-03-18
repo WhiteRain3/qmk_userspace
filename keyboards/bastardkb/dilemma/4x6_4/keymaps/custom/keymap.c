@@ -19,6 +19,7 @@
 #include <qp.h>
 #include "generated/logo.qgf.h"
 #include "generated/fira24.qff.h"
+#include "qp_draw.h"  // this contains qp_set_drawcolor and friends
 
 enum dilemma_keymap_layers {
     LAYER_BASE = 0,
@@ -46,10 +47,10 @@ typedef struct {
 } LayerTheme;
 
 const LayerTheme layer_themes[] = {
-    [LAYER_BASE]   = {RGB_BLACK, RGB_WHITE},
-    [LAYER_QWERTY] = {RGB_BLUE,  RGB_YELLOW},
-    [LAYER_LOWER]  = {RGB_DARKGRAY, RGB_CYAN},
-    [LAYER_RAISE]  = {RGB_PURPLE, RGB_GREEN},
+    [LAYER_BASE]   = { RGB565(0x00, 0x00, 0x00), RGB565(0xFF, 0xFF, 0xFF) }, // black bg, white text
+    [LAYER_QWERTY] = { RGB565(0x00, 0x00, 0xFF), RGB565(0xFF, 0xFF, 0x00) }, // blue bg, yellow text
+    [LAYER_LOWER]  = { RGB565(0x20, 0x20, 0x20), RGB565(0x00, 0xFF, 0xFF) }, // dark gray bg, cyan text
+    [LAYER_RAISE]  = { RGB565(0x80, 0x00, 0x80), RGB565(0x00, 0xFF, 0x00) }, // purple bg, green text
 };
 static uint16_t current_bg = RGB_BLACK;
 static uint16_t current_text = RGB_WHITE;
@@ -113,6 +114,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   )
 };
 // clang-format on
+extern void qp_set_drawcolor(painter_device_t device, uint16_t color);
 uint32_t animate_text(uint32_t trigger, void *ctx);
 #ifdef POINTING_DEVICE_ENABLE
 #    ifdef DILEMMA_AUTO_SNIPING_ON_LAYER
@@ -168,7 +170,8 @@ static deferred_token anim_token;
 uint32_t animate_text(uint32_t trigger, void *ctx) {
     if (!display || !my_font || !anim_text) return 0;
 
-    qp_rect(display, 0, 0, 240, 240, current_bg, true);
+    qp_fillrect(display, 0, 0, 240, 240, current_bg);
+
 
     char partial[32] = {0};
     memcpy(partial, anim_text, anim_step);
