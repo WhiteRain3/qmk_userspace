@@ -203,8 +203,8 @@ uint32_t animate_text(uint32_t trigger, void *ctx) {
 
     if (!display || !my_font || !anim_text) return 0;
 
-    uint8_t r, g, b;
-    uint8_t h, s, v;
+
+    // uint8_t h, s, v;
 
     char partial[32] = {0};
     memcpy(partial, anim_text, anim_step);
@@ -214,6 +214,7 @@ uint32_t animate_text(uint32_t trigger, void *ctx) {
     int16_t y = (240 - my_font->line_height) / 2;
 
     if (anim_step == 0)
+        uint8_t r, g, b;
         {rgb565_to_rgb888(current_text, &r, &g, &b);
         rgb888_to_hsv(r, g, b, &h_fg, &s_fg, &v_fg);
 
