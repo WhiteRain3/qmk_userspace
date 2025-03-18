@@ -18,7 +18,7 @@
 #include QMK_KEYBOARD_H
 #include <qp.h>
 #include "generated/logo.qgf.h"
-#include "generated/fira11.qff.h"
+#include "fira11.qff.c"
 
 enum dilemma_keymap_layers {
     LAYER_BASE = 0,
@@ -125,7 +125,7 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 // clang-format on
 #endif  // ENCODER_MAP_ENABLE
 
-painter_device_t display;
+painter_device_t display=NULL;
 // static painter_image_handle_t my_image;
 // static deferred_token my_anim;
 
@@ -147,11 +147,18 @@ painter_device_t display;
 
 static painter_font_handle_t my_font;
 layer_state_t layer_state_set_user(layer_state_t state) {
-    // qmk painter-make-font-image --font fonts/Fira-Code-Mono.ttf --size 11 -o ./generated/fira11.png
-    // qmk painter-convert-font-image --input ./generated/fira11.png -f mono
-    //my_image = qp_load_image_mem(gfx_logo);
-    my_font = qp_load_font_mem(font_fira11);
-    if (my_font == NULL) return state;
+    if (!my_font) {
+        my_font = qp_load_font_mem(font_fira11);
+        if (my_font == NULL) {
+            dprint("Font load failed!\n");
+            return state;
+        }
+    }
+
+    if (!display) {
+        display = qp_gc9a01_make_spi_device(240, 240, LCD_CS_PIN, LCD_DC_PIN, LCD_RST_PIN, 2, 0);
+        qp_init(display, QP_ROTATION_0);
+    }
 
     const char *text;
     switch (get_highest_layer(state)) {
@@ -161,12 +168,13 @@ layer_state_t layer_state_set_user(layer_state_t state) {
         case LAYER_RAISE:  text = "Nav & Fkeys"; break;
         default:           text = "Undefined";   break;
     }
-    display = qp_gc9a01_make_spi_device(240, 240, LCD_CS_PIN, LCD_DC_PIN, LCD_RST_PIN, 2, 0);
-    qp_init(display, QP_ROTATION_0);
+
     qp_clear(display);
 
     int16_t width = qp_textwidth(my_font, text);
-    qp_drawtext(display, (240 - width), (240 - my_font->line_height), my_font, text);
+    int16_t x = (240 - width) / 2;
+    int16_t y = (240 - my_font->line_height) / 2;
+    qp_drawtext(display, x, y, my_font, text);
     qp_flush(display);
 
     return state;
