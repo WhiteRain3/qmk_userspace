@@ -167,6 +167,33 @@ static deferred_token anim_token;
 // qmk painter-make-font-image --font fonts/Fira-Code-Mono.ttf --size 24 -o ./generated/fira24.png
 // qmk painter-convert-font-image --input ./generated/fira24.png -f mono
 
+void rgb565_to_rgb888(uint16_t rgb565, uint8_t *r, uint8_t *g, uint8_t *b) {
+    *r = ((rgb565 >> 11) & 0x1F) << 3;
+    *g = ((rgb565 >> 5) & 0x3F) << 2;
+    *b = (rgb565 & 0x1F) << 3;
+}
+void rgb888_to_hsv(uint8_t r, uint8_t g, uint8_t b, uint8_t *h, uint8_t *s, uint8_t *v) {
+    uint8_t max = r > g ? (r > b ? r : b) : (g > b ? g : b);
+    uint8_t min = r < g ? (r < b ? r : b) : (g < b ? g : b);
+    *v = max;
+
+    uint8_t delta = max - min;
+    *s = (max == 0) ? 0 : (delta * 255) / max;
+
+    if (delta == 0) {
+        *h = 0;
+        return;
+    }
+
+    if (max == r) {
+        *h = 43 * (g - b) / delta;
+    } else if (max == g) {
+        *h = 85 + 43 * (b - r) / delta;
+    } else {
+        *h = 171 + 43 * (r - g) / delta;
+    }
+}
+
 uint32_t animate_text(uint32_t trigger, void *ctx) {
     if (!display || !my_font || !anim_text) return 0;
 
@@ -183,10 +210,20 @@ uint32_t animate_text(uint32_t trigger, void *ctx) {
     int16_t width = qp_textwidth(my_font, partial);
     int16_t x = (240 - width) / 2;
     int16_t y = (240 - my_font->line_height) / 2;
-    qp_drawtext_recolor(display, x, y, my_font, partial,
-        0, 0, 255,   // white text (h=0, s=0, v=255)
-        0, 0, 0      // black background (h=0, s=0, v=0)
-    );
+    uint8_t r, g, b;
+uint8_t h_fg, s_fg, v_fg;
+uint8_t h_bg, s_bg, v_bg;
+
+rgb565_to_rgb888(current_text, &r, &g, &b);
+rgb888_to_hsv(r, g, b, &h_fg, &s_fg, &v_fg);
+
+rgb565_to_rgb888(current_bg, &r, &g, &b);
+rgb888_to_hsv(r, g, b, &h_bg, &s_bg, &v_bg);
+
+qp_drawtext_recolor(display, x, y, my_font, partial,
+    h_fg, s_fg, v_fg,
+    h_bg, s_bg, v_bg
+);
     qp_flush(display);
 
     if (anim_text[anim_step] != '\0') {
