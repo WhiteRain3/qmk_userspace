@@ -208,7 +208,7 @@ uint32_t animate_text(uint32_t trigger, void *ctx) {
 
     // For a 5px thick ring
     for (int i = 0; i < 8; i++) {
-        qp_circle(display, 120, 120, 113 - i, hue, sat, val, false);
+        qp_circle(display, 120, 120, 121 - i, h, s, v, false);
     }
 
 
