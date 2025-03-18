@@ -19,7 +19,7 @@
 #include <qp.h>
 #include "generated/logo.qgf.h"
 #include "generated/fira24.qff.h"
-#include "qp_draw.h"  // this contains qp_set_drawcolor and friends
+#include "qp_draw.h"
 
 enum dilemma_keymap_layers {
     LAYER_BASE = 0,
@@ -172,7 +172,7 @@ static deferred_token anim_token;
 uint32_t animate_text(uint32_t trigger, void *ctx) {
     if (!display || !my_font || !anim_text) return 0;
 
-    qp_fillrect(display, 0, 0, 240, 240, current_bg);
+    qp_rect(display, 0, 0, 240, 240, current_bg);
 
 
     char partial[32] = {0};
