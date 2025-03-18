@@ -197,11 +197,10 @@ void rgb888_to_hsv(uint8_t r, uint8_t g, uint8_t b, uint8_t *h, uint8_t *s, uint
 uint32_t animate_text(uint32_t trigger, void *ctx) {
     if (!display || !my_font || !anim_text) return 0;
 
-    qp_rect(display, 0, 0, 240, 240,
-        (current_bg >> 11) << 3,     // Red (5 bits → 8 bits)
-        ((current_bg >> 5) & 0x3F) << 2,  // Green (6 bits → 8 bits)
-        (current_bg & 0x1F) << 3,     // Blue (5 bits → 8 bits)
-        true);  // Filled = true
+    uint8_t r, g, b;
+    rgb565_to_rgb888(current_bg, &r, &g, &b);
+
+    qp_rect(display, 0, 0, 240, 240, r, g, b, true);
 
 
     char partial[32] = {0};
