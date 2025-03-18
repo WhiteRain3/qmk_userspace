@@ -175,7 +175,7 @@
      rgb565_to_rgb888(current_bg, &r, &g, &b);
      rgb888_to_hsv(r, g, b, &h_bg, &s_bg, &v_bg);
      qp_circle(display, 120, 120, 121, h_bg, s_bg, v_bg, true);   // Outer ring (border)
-     qp_circle(display, 120, 120, 115, 0, 0, 0, false);             // Inner cutout
+     qp_circle(display, 120, 120, 112, 0, 0, 0, true);             // Inner cutout
      qp_flush(display);
 
      return state;
