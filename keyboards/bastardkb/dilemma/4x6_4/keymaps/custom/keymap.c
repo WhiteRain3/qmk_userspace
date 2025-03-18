@@ -19,6 +19,7 @@
 #include <qp.h>
 #include "generated/logo.qgf.h"
 #include "generated/fira24.qff.h"
+#include "color.h"
 
 enum dilemma_keymap_layers {
     LAYER_BASE = 0,
@@ -199,8 +200,10 @@ uint32_t animate_text(uint32_t trigger, void *ctx) {
 
     uint8_t r, g, b;
     rgb565_to_rgb888(current_bg, &r, &g, &b);
+    RGB rgb = { r, g, b };
+    HSV hsv = rgb_to_hsv(rgb);
 
-    qp_rect(display, 0, 0, 240, 240, r, g, b, true);
+    qp_rect(display, 0, 0, 239, 239, 0, 255, 255, true);  // bright red
 
 
     char partial[32] = {0};
