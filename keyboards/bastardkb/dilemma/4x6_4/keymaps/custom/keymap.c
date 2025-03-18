@@ -174,7 +174,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 
     // Clear display and draw text centered
     qp_clear(display);
-    qp_fillrect(display, 0, 0, 240, 240, RGB565_BLACK); // full-screen black fil
+    qp_rect(display, 0, 0, 240, 240, RGB_BLACK, true);
     int16_t width = qp_textwidth(my_font, text);
     int16_t x = (240 - width) / 2;
     int16_t y = (240 - my_font->line_height) / 2;
