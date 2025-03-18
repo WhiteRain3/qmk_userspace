@@ -214,8 +214,9 @@ uint32_t animate_text(uint32_t trigger, void *ctx) {
     int16_t y = (240 - my_font->line_height) / 2;
 
     if (anim_step == 0)
+    {
         uint8_t r, g, b;
-        {rgb565_to_rgb888(current_text, &r, &g, &b);
+        rgb565_to_rgb888(current_text, &r, &g, &b);
         rgb888_to_hsv(r, g, b, &h_fg, &s_fg, &v_fg);
 
         rgb565_to_rgb888(current_bg, &r, &g, &b);
@@ -223,7 +224,7 @@ uint32_t animate_text(uint32_t trigger, void *ctx) {
 
         qp_circle(display, 120, 120, 121, h_bg, s_bg, v_bg, true);   // outer ring (border)
         qp_circle(display, 120, 120, 115, 0, 0, 0, false); // inner cutout
-        }
+    }
     qp_drawtext_recolor(display, x, y, my_font, partial,
         h_fg, s_fg, v_fg,
         h_bg, s_bg, v_bg
