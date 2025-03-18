@@ -49,11 +49,12 @@ typedef struct {
 } LayerTheme;
 
 const LayerTheme layer_themes[] = {
-    [LAYER_BASE]   = { RGB565(0x00, 0x00, 0x00), RGB565(0xFF, 0xFF, 0xFF) }, // black bg, white text
-    [LAYER_QWERTY] = { RGB565(0x00, 0x00, 0xFF), RGB565(0xFF, 0xFF, 0x00) }, // blue bg, yellow text
-    [LAYER_LOWER]  = { RGB565(0x20, 0x20, 0x20), RGB565(0x00, 0xFF, 0xFF) }, // dark gray bg, cyan text
-    [LAYER_RAISE]  = { RGB565(0x80, 0x00, 0x80), RGB565(0x00, 0xFF, 0x00) }, // purple bg, green text
+    [LAYER_BASE]   = { RGB565(0x00, 0x00, 0x00), RGB565(0xFF, 0xFF, 0xFF) }, // Black bg, White text
+    [LAYER_QWERTY] = { RGB565(0xFF, 0x00, 0x00), RGB565(0xFF, 0xFF, 0xFF) }, // Red bg, White text
+    [LAYER_LOWER]  = { RGB565(0x00, 0x00, 0xFF), RGB565(0xFF, 0xFF, 0xFF) }, // Blue bg, White text
+    [LAYER_RAISE]  = { RGB565(0xFF, 0xFF, 0xFF), RGB565(0x00, 0x00, 0x00) }, // White bg, Black text
 };
+
 static uint16_t current_bg = RGB565(0x00, 0x00, 0x00);
 static uint16_t current_text = RGB565(0xFF, 0xFF, 0xFF);
 
@@ -197,6 +198,7 @@ void rgb888_to_hsv(uint8_t r, uint8_t g, uint8_t b, uint8_t *h, uint8_t *s, uint
 }
 
 uint32_t animate_text(uint32_t trigger, void *ctx) {
+
     if (!display || !my_font || !anim_text) return 0;
 
     uint8_t r, g, b;
@@ -204,7 +206,7 @@ uint32_t animate_text(uint32_t trigger, void *ctx) {
     uint8_t h, s, v;
     rgb888_to_hsv(r, g, b, &h, &s, &v);
 
-    qp_rect(display, 0, 0, 239, 239, 0, 255, 255, true);  // bright red
+    qp_rect(display, 0, 0, 239, 239, h, s, v, true);  // Use HSV from bg
 
 
     char partial[32] = {0};
@@ -279,6 +281,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 
 
 layer_state_t default_layer_state_set_user(layer_state_t state) {
-    // Reuse the drawing code from layer_state_set_user
-    return layer_state_set_user(state);
+    default_layer_state = state;  // update global
+    layer_state_t merged_state = layer_state | default_layer_state;
+    return layer_state_set_user(merged_state);
 }
