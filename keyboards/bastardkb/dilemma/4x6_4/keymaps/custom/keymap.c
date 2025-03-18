@@ -197,52 +197,6 @@ void rgb888_to_hsv(uint8_t r, uint8_t g, uint8_t b, uint8_t *h, uint8_t *s, uint
     }
 }
 
-uint8_t h_fg, s_fg, v_fg;
-uint8_t h_bg, s_bg, v_bg;
-uint32_t animate_text(uint32_t trigger, void *ctx) {
-
-    if (!display || !my_font || !anim_text) return 0;
-
-
-    // uint8_t h, s, v;
-
-    char partial[32] = {0};
-    memcpy(partial, anim_text, anim_step);
-
-    int16_t width = qp_textwidth(my_font, partial);
-    int16_t x = (240 - width) / 2;
-    int16_t y = (240 - my_font->line_height) / 2;
-
-    if (anim_step == 0)
-    {
-        uint8_t r, g, b;
-        rgb565_to_rgb888(current_text, &r, &g, &b);
-        rgb888_to_hsv(r, g, b, &h_fg, &s_fg, &v_fg);
-
-        rgb565_to_rgb888(current_bg, &r, &g, &b);
-        rgb888_to_hsv(r, g, b, &h_bg, &s_bg, &v_bg);
-
-        qp_circle(display, 120, 120, 121, h_bg, s_bg, v_bg, true);   // outer ring (border)
-        qp_circle(display, 120, 120, 115, 0, 0, 0, false); // inner cutout
-    }
-    qp_drawtext_recolor(display, x, y, my_font, partial,
-        h_fg, s_fg, v_fg,
-        h_bg, s_bg, v_bg
-    );
-    qp_flush(display);
-
-    if (anim_text[anim_step] != '\0') {
-        anim_step++;
-        anim_token = defer_exec(50, animate_text, NULL);  // ✅ 3 arguments
-    }
-    else
-    {
-        anim_step = 0;
-    }
-
-    return 0;
-}
-
 layer_state_t layer_state_set_user(layer_state_t state) {
     // Combine default + active layers
     layer_state_t merged_state = state | default_layer_state;
@@ -277,10 +231,14 @@ layer_state_t layer_state_set_user(layer_state_t state) {
         current_bg = RGB565(0x00, 0x00, 0x00);  // black
         current_text = RGB565(0xFF, 0xFF, 0xFF);  // white
     }
+    uint8_t h_bg, s_bg, v_bg;
+    uint8_t r, g, b;
+    rgb565_to_rgb888(current_bg, &r, &g, &b);
+    rgb888_to_hsv(r, g, b, &h_bg, &s_bg, &v_bg);
+    qp_circle(display, 120, 120, 121, h_bg, s_bg, v_bg, true);   // outer ring (border)
+    qp_circle(display, 120, 120, 115, 0, 0, 0, false); // inner cutout
+    qp_flush(display);
 
-    // Start animation
-    anim_step = 1;
-    animate_text(0, NULL);  // Initial call
     return state;
 }
 
