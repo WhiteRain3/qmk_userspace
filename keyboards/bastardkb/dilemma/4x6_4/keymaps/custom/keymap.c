@@ -162,14 +162,12 @@
          qp_init(display, QP_ROTATION_0);
      }
 
-     // Determine the theme for the active layer.
-     uint16_t current_bg, current_text;
+     // Determine the theme for the active layer using only the background color.
+     uint16_t current_bg;
      if (layer < (sizeof(layer_themes) / sizeof(layer_themes[0]))) {
          current_bg = layer_themes[layer].bg_color;
-         current_text = layer_themes[layer].text_color;
      } else {
          current_bg = RGB565(0x00, 0x00, 0x00);  // Fallback to black
-         current_text = RGB565(0xFF, 0xFF, 0xFF);  // Fallback to white
      }
 
      // Convert the RGB565 background color to HSV and update the display.
