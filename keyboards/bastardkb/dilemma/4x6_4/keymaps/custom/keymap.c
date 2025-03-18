@@ -206,7 +206,10 @@ uint32_t animate_text(uint32_t trigger, void *ctx) {
     uint8_t h, s, v;
     rgb888_to_hsv(r, g, b, &h, &s, &v);
 
-    qp_circle(display, 120, 120, 120, h, s, v, false);
+    // For a 5px thick ring
+    for (int i = 0; i < 8; i++) {
+        qp_circle(display, 120, 120, 113 - i, hue, sat, val, false);
+    }
 
 
     char partial[32] = {0};
