@@ -209,20 +209,19 @@ uint32_t animate_text(uint32_t trigger, void *ctx) {
     int16_t width = qp_textwidth(my_font, partial);
     int16_t x = (240 - width) / 2;
     int16_t y = (240 - my_font->line_height) / 2;
-    uint8_t r, g, b;
-uint8_t h_fg, s_fg, v_fg;
-uint8_t h_bg, s_bg, v_bg;
+    uint8_t h_fg, s_fg, v_fg;
+    uint8_t h_bg, s_bg, v_bg;
 
-rgb565_to_rgb888(current_text, &r, &g, &b);
-rgb888_to_hsv(r, g, b, &h_fg, &s_fg, &v_fg);
+    rgb565_to_rgb888(current_text, &r, &g, &b);
+    rgb888_to_hsv(r, g, b, &h_fg, &s_fg, &v_fg);
 
-rgb565_to_rgb888(current_bg, &r, &g, &b);
-rgb888_to_hsv(r, g, b, &h_bg, &s_bg, &v_bg);
+    rgb565_to_rgb888(current_bg, &r, &g, &b);
+    rgb888_to_hsv(r, g, b, &h_bg, &s_bg, &v_bg);
 
-qp_drawtext_recolor(display, x, y, my_font, partial,
-    h_fg, s_fg, v_fg,
-    h_bg, s_bg, v_bg
-);
+    qp_drawtext_recolor(display, x, y, my_font, partial,
+        h_fg, s_fg, v_fg,
+        h_bg, s_bg, v_bg
+    );
     qp_flush(display);
 
     if (anim_text[anim_step] != '\0') {
