@@ -18,6 +18,7 @@
 #include QMK_KEYBOARD_H
 #include <qp.h>
 #include "generated/logo.qgf.h"
+#include "generated/fira11.qff.h"
 
 enum dilemma_keymap_layers {
     LAYER_BASE = 0,
@@ -124,7 +125,8 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 // clang-format on
 #endif  // ENCODER_MAP_ENABLE
 
-painter_device_t display=NULL;
+static painter_font_handle_t my_font = NULL;
+static painter_device_t display = NULL;
 // static painter_image_handle_t my_image;
 // static deferred_token my_anim;
 
@@ -143,23 +145,23 @@ painter_device_t display=NULL;
 //         my_anim = qp_animate(display, (0), (0), my_image);
 //     }
 //    }
-extern const uint8_t font_fira11[];
-extern const painter_font_t font_fira11;
-static painter_font_handle_t my_font;
 layer_state_t layer_state_set_user(layer_state_t state) {
+    // Load the font once
     if (!my_font) {
-        my_font = qp_load_font_mem(font_fira11);
-        if (my_font == NULL) {
+        my_font = qp_load_font_mem(&font_fira11);  // ✅ Correct use of & with .qff format
+        if (!my_font) {
             dprint("Font load failed!\n");
             return state;
         }
     }
 
+    // Initialize display once
     if (!display) {
         display = qp_gc9a01_make_spi_device(240, 240, LCD_CS_PIN, LCD_DC_PIN, LCD_RST_PIN, 2, 0);
         qp_init(display, QP_ROTATION_0);
     }
 
+    // Determine text based on active layer
     const char *text;
     switch (get_highest_layer(state)) {
         case LAYER_BASE:   text = "Colemak";     break;
@@ -169,11 +171,13 @@ layer_state_t layer_state_set_user(layer_state_t state) {
         default:           text = "Undefined";   break;
     }
 
+    // Clear display and draw text centered
     qp_clear(display);
 
     int16_t width = qp_textwidth(my_font, text);
     int16_t x = (240 - width) / 2;
     int16_t y = (240 - my_font->line_height) / 2;
+
     qp_drawtext(display, x, y, my_font, text);
     qp_flush(display);
 
