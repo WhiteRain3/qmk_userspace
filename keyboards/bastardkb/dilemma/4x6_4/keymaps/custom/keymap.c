@@ -18,7 +18,7 @@
 #include QMK_KEYBOARD_H
 #include <qp.h>
 #include "generated/logo.qgf.h"
-#include "generated/fira11.qff.h"
+#include "generated/fira24.qff.h"
 
 enum dilemma_keymap_layers {
     LAYER_BASE = 0,
@@ -39,6 +39,20 @@ enum dilemma_keymap_layers {
 #    define S_D_MOD KC_NO
 #    define SNIPING KC_NO
 #endif  // !POINTING_DEVICE_ENABLE
+
+typedef struct {
+    uint16_t bg_color;
+    uint16_t text_color;
+} LayerTheme;
+
+const LayerTheme layer_themes[] = {
+    [LAYER_BASE]   = {RGB_BLACK, RGB_WHITE},
+    [LAYER_QWERTY] = {RGB_BLUE,  RGB_YELLOW},
+    [LAYER_LOWER]  = {RGB_DARKGRAY, RGB_CYAN},
+    [LAYER_RAISE]  = {RGB_PURPLE, RGB_GREEN},
+};
+static uint16_t current_bg = RGB_BLACK;
+static uint16_t current_text = RGB_WHITE;
 
 // clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -148,11 +162,13 @@ static painter_device_t display = NULL;
 static const char *anim_text = NULL;
 static uint8_t anim_step = 0;
 static deferred_token anim_token;
+// qmk painter-make-font-image --font fonts/Fira-Code-Mono.ttf --size 24 -o ./generated/fira24.png
+// qmk painter-convert-font-image --input ./generated/fira24.png -f mono
 
 uint32_t animate_text(uint32_t trigger, void *ctx) {
     if (!display || !my_font || !anim_text) return 0;
 
-    qp_rect(display, 0, 0, 240, 240, RGB_BLACK, true);
+    qp_rect(display, 0, 0, 240, 240, current_bg, true);
 
     char partial[32] = {0};
     memcpy(partial, anim_text, anim_step);
@@ -161,7 +177,7 @@ uint32_t animate_text(uint32_t trigger, void *ctx) {
     int16_t x = (240 - width) / 2;
     int16_t y = (240 - my_font->line_height) / 2;
 
-    qp_drawtext(display, x, y, my_font, partial);
+    qp_drawtext(display, x, y, my_font, partial, current_text);
     qp_flush(display);
 
     if (anim_text[anim_step] != '\0') {
@@ -174,7 +190,7 @@ uint32_t animate_text(uint32_t trigger, void *ctx) {
 
 layer_state_t layer_state_set_user(layer_state_t state) {
     if (!my_font) {
-        my_font = qp_load_font_mem(&font_fira11);
+        my_font = qp_load_font_mem(&font_fira24);
         if (!my_font) {
             dprint("Font load failed!\n");
             return state;
@@ -186,12 +202,23 @@ layer_state_t layer_state_set_user(layer_state_t state) {
         qp_init(display, QP_ROTATION_0);
     }
 
-    switch (get_highest_layer(state)) {
+    uint8_t layer = get_highest_layer(state);
+
+    switch (layer) {
         case LAYER_BASE:   anim_text = "Colemak";     break;
         case LAYER_QWERTY: anim_text = "QWERTY";      break;
         case LAYER_LOWER:  anim_text = "Symbols";     break;
         case LAYER_RAISE:  anim_text = "Nav & Fkeys"; break;
         default:           anim_text = "Undefined";   break;
+    }
+
+    // 🌈 Get theme for this layer (fallback to base if out of bounds)
+    if (layer < sizeof(layer_themes)/sizeof(layer_themes[0])) {
+        current_bg = layer_themes[layer].bg_color;
+        current_text = layer_themes[layer].text_color;
+    } else {
+        current_bg = RGB_BLACK;
+        current_text = RGB_WHITE;
     }
 
     // Start animation
