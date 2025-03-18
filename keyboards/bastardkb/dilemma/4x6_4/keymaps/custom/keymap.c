@@ -183,7 +183,10 @@ uint32_t animate_text(uint32_t trigger, void *ctx) {
     int16_t width = qp_textwidth(my_font, partial);
     int16_t x = (240 - width) / 2;
     int16_t y = (240 - my_font->line_height) / 2;
-    qp_drawtext_recolor(display, x, y, my_font, partial, current_text);
+    qp_drawtext_recolor(display, x, y, my_font, partial,
+        0, 0, 255,   // white text (h=0, s=0, v=255)
+        0, 0, 0      // black background (h=0, s=0, v=0)
+    );
     qp_flush(display);
 
     if (anim_text[anim_step] != '\0') {
