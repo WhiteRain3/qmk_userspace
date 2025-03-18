@@ -126,8 +126,8 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 #endif  // ENCODER_MAP_ENABLE
 
 painter_device_t display;
-static painter_image_handle_t my_image;
-static deferred_token my_anim;
+// static painter_image_handle_t my_image;
+// static deferred_token my_anim;
 
 // void keyboard_post_init_kb(void) {
 //     // https://imageresizer.com/
@@ -149,9 +149,9 @@ static painter_font_handle_t my_font;
 layer_state_t layer_state_set_user(layer_state_t state) {
     // qmk painter-make-font-image --font fonts/Fira-Code-Mono.ttf --size 11 -o ./generated/fira11.png
     // qmk painter-convert-font-image --input ./generated/fira11.png -f mono
-    my_image = qp_load_image_mem(gfx_logo);
+    //my_image = qp_load_image_mem(gfx_logo);
     my_font = qp_load_font_mem(font_fira11);
-    if (my_image == NULL || my_font == NULL) return state;
+    if (my_font == NULL) return state;
 
     const char *text;
     switch (get_highest_layer(state)) {
