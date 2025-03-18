@@ -19,7 +19,7 @@
 #include <qp.h>
 #include "generated/logo.qgf.h"
 #include "generated/fira24.qff.h"
-#include "color.h"
+#include "quantum/color.h"
 
 enum dilemma_keymap_layers {
     LAYER_BASE = 0,
@@ -162,6 +162,7 @@ static painter_device_t display = NULL;
 //         my_anim = qp_animate(display, (0), (0), my_image);
 //     }
 //    }
+static layer_state_t default_layer_state = 1UL;
 static const char *anim_text = NULL;
 static uint8_t anim_step = 0;
 static deferred_token anim_token;
@@ -201,7 +202,7 @@ uint32_t animate_text(uint32_t trigger, void *ctx) {
     uint8_t r, g, b;
     rgb565_to_rgb888(current_bg, &r, &g, &b);
     RGB rgb = { r, g, b };
-    HSV hsv = rgb_to_hsv(rgb);
+    HSV hsv = rgb888_to_hsv(rgb);
 
     qp_rect(display, 0, 0, 239, 239, 0, 255, 255, true);  // bright red
 
@@ -236,6 +237,10 @@ uint32_t animate_text(uint32_t trigger, void *ctx) {
 }
 
 layer_state_t layer_state_set_user(layer_state_t state) {
+    // Combine default + active layers
+    layer_state_t merged_state = state | default_layer_state;
+
+    uint8_t layer = get_highest_layer(merged_state);
     if (!my_font) {
         my_font = qp_load_font_mem(&font_fira24);
         if (!my_font) {
