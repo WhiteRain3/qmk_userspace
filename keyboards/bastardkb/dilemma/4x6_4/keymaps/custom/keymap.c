@@ -115,7 +115,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   )
 };
 // clang-format on
-extern void qp_set_drawcolor(painter_device_t device, uint16_t color);
 uint32_t animate_text(uint32_t trigger, void *ctx);
 #ifdef POINTING_DEVICE_ENABLE
 #    ifdef DILEMMA_AUTO_SNIPING_ON_LAYER
@@ -184,8 +183,7 @@ uint32_t animate_text(uint32_t trigger, void *ctx) {
     int16_t width = qp_textwidth(my_font, partial);
     int16_t x = (240 - width) / 2;
     int16_t y = (240 - my_font->line_height) / 2;
-    qp_drawtext_set_color(display, current_text);
-    qp_drawtext(display, x, y, my_font, partial);
+    qp_drawtext_recolor(display, x, y, my_font, partial, current_text);
     qp_flush(display);
 
     if (anim_text[anim_step] != '\0') {
