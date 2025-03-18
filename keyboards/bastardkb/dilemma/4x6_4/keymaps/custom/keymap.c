@@ -202,15 +202,7 @@ uint32_t animate_text(uint32_t trigger, void *ctx) {
     if (!display || !my_font || !anim_text) return 0;
 
     uint8_t r, g, b;
-    rgb565_to_rgb888(current_bg, &r, &g, &b);
     uint8_t h, s, v;
-    rgb888_to_hsv(r, g, b, &h, &s, &v);
-
-    // For a 5px thick ring
-    for (int i = 0; i < 8; i++) {
-        qp_circle(display, 120, 120, 121 - i, h, s, v, false);
-    }
-
 
     char partial[32] = {0};
     memcpy(partial, anim_text, anim_step);
@@ -226,6 +218,9 @@ uint32_t animate_text(uint32_t trigger, void *ctx) {
 
     rgb565_to_rgb888(current_bg, &r, &g, &b);
     rgb888_to_hsv(r, g, b, &h_bg, &s_bg, &v_bg);
+
+    qp_circle(display, 120, 120, 121, h_bg, s_bg, v_bg, true);   // outer ring (border)
+    qp_circle(display, 120, 120, 115, 0, 0, 0, true); // inner cutout
 
     qp_drawtext_recolor(display, x, y, my_font, partial,
         h_fg, s_fg, v_fg,
