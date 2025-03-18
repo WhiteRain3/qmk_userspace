@@ -66,7 +66,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // ├──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────┤
        KC_LCTL,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,  KC_M,   KC_COMM, KC_DOT, KC_SLSH, DF(0),
   // ╰──────────────────────────────────────────────────────┤ ├──────────────────────────────────────────────────╯
-                         KC_LGUI, KC_LALT,  KC_SPC,   LOWER,    RAISE, KC_ENT, KC_BSPC, _______
+                         KC_LGUI, KC_LALT,  KC_SPC,   LOWER,    RAISE, KC_BSPC, KC_ENT, _______
   //                    ╰───────────────────────────────────╯ ╰────────────────────────────────╯
   ),
 
@@ -145,6 +145,7 @@ static painter_device_t display = NULL;
 //         my_anim = qp_animate(display, (0), (0), my_image);
 //     }
 //    }
+
 layer_state_t layer_state_set_user(layer_state_t state) {
     // Load the font once
     if (!my_font) {
@@ -173,7 +174,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 
     // Clear display and draw text centered
     qp_clear(display);
-
+    qp_fillrect(display, 0, 0, 240, 240, RGB565_BLACK); // full-screen black fil
     int16_t width = qp_textwidth(my_font, text);
     int16_t x = (240 - width) / 2;
     int16_t y = (240 - my_font->line_height) / 2;
@@ -182,4 +183,8 @@ layer_state_t layer_state_set_user(layer_state_t state) {
     qp_flush(display);
 
     return state;
+}
+layer_state_t default_layer_state_set_user(layer_state_t state) {
+    // Reuse the drawing code from layer_state_set_user
+    return layer_state_set_user(state);
 }
