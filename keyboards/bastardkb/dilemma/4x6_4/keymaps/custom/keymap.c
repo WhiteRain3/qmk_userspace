@@ -202,7 +202,7 @@ uint32_t animate_text(uint32_t trigger, void *ctx) {
     if (!display || !my_font || !anim_text) return 0;
 
     uint8_t r, g, b;
-    uint8_t h, s, v;
+    //uint8_t h, s, v;
 
     char partial[32] = {0};
     memcpy(partial, anim_text, anim_step);
