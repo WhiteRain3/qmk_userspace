@@ -27,6 +27,8 @@ enum dilemma_keymap_layers {
     LAYER_LOWER,
     LAYER_RAISE,
 };
+#define RGB565(r, g, b) ((((r) & 0xF8) << 8) | (((g) & 0xFC) << 3) | ((b) >> 3))
+
 
 #define LOWER MO(LAYER_LOWER)
 #define RAISE MO(LAYER_RAISE)
@@ -52,8 +54,8 @@ const LayerTheme layer_themes[] = {
     [LAYER_LOWER]  = { RGB565(0x20, 0x20, 0x20), RGB565(0x00, 0xFF, 0xFF) }, // dark gray bg, cyan text
     [LAYER_RAISE]  = { RGB565(0x80, 0x00, 0x80), RGB565(0x00, 0xFF, 0x00) }, // purple bg, green text
 };
-static uint16_t current_bg = RGB_BLACK;
-static uint16_t current_text = RGB_WHITE;
+static uint16_t current_bg = RGB565(0x00, 0x00, 0x00);
+static uint16_t current_text = RGB565(0xFF, 0xFF, 0xFF);
 
 // clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
