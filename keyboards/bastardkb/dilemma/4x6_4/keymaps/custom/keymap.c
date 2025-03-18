@@ -99,7 +99,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   )
 };
 // clang-format on
-
+uint32_t animate_text(uint32_t trigger, void *ctx);
 #ifdef POINTING_DEVICE_ENABLE
 #    ifdef DILEMMA_AUTO_SNIPING_ON_LAYER
 layer_state_t layer_state_set_user(layer_state_t state) {
@@ -149,8 +149,8 @@ static const char *anim_text = NULL;
 static uint8_t anim_step = 0;
 static deferred_token anim_token;
 
-void animate_text(uint16_t trigger) {
-    if (!display || !my_font || !anim_text) return;
+uint32_t animate_text(uint32_t trigger, void *ctx) {
+    if (!display || !my_font || !anim_text) return 0;
 
     qp_rect(display, 0, 0, 240, 240, RGB_BLACK, true);
 
@@ -166,8 +166,10 @@ void animate_text(uint16_t trigger) {
 
     if (anim_text[anim_step] != '\0') {
         anim_step++;
-        anim_token = defer_exec(50, animate_text); // 50ms delay
+        anim_token = defer_exec(50, animate_text, NULL);  // ✅ 3 arguments
     }
+
+    return 0;
 }
 
 layer_state_t layer_state_set_user(layer_state_t state) {
@@ -194,7 +196,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 
     // Start animation
     anim_step = 1;
-    animate_text(0);  // Initial call
+    animate_text(0, NULL);  // Initial call
     return state;
 }
 
