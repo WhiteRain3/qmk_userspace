@@ -18,7 +18,6 @@
 #include QMK_KEYBOARD_H
 #include <qp.h>
 #include "generated/logo.qgf.h"
-#include "generated/fira11.qff.c"
 
 enum dilemma_keymap_layers {
     LAYER_BASE = 0,
@@ -144,7 +143,8 @@ painter_device_t display=NULL;
 //         my_anim = qp_animate(display, (0), (0), my_image);
 //     }
 //    }
-
+extern const uint8_t font_fira11[];
+extern const painter_font_t font_fira11;
 static painter_font_handle_t my_font;
 layer_state_t layer_state_set_user(layer_state_t state) {
     if (!my_font) {
