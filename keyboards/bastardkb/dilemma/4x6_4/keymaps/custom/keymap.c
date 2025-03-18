@@ -129,27 +129,26 @@ painter_device_t display;
 static painter_image_handle_t my_image;
 static deferred_token my_anim;
 
-void keyboard_post_init_kb(void) {
-    // https://imageresizer.com/
-    // https://ezgif.com/resize
-    // https://msys.qmk.fm/  -- for the cli to run commands on
-    // qmk painter-convert-graphics -f pal2 -i pics/logo.png -o ./generated/
-    display = qp_gc9a01_make_spi_device(240, 240, LCD_CS_PIN, LCD_DC_PIN, LCD_RST_PIN, 2, 0);
-    qp_init(display, QP_ROTATION_0);
-    my_image = qp_load_image_mem(gfx_logo);
-    if (my_image != NULL) {
-        // qp_clear(display);
-        // qp_drawimage(display, (0), (0), my_image);
-        // qp_flush(display);
-        if (LAYER_BASE)
-        my_anim = qp_animate(display, (0), (0), my_image);
-    }
-}
+// void keyboard_post_init_kb(void) {
+//     // https://imageresizer.com/
+//     // https://ezgif.com/resize
+//     // https://msys.qmk.fm/  -- for the cli to run commands on
+//     // qmk painter-convert-graphics -f pal2 -i pics/logo.png -o ./generated/
+//
+//     my_image = qp_load_image_mem(gfx_logo);
+//     if (my_image != NULL) {
+//         // qp_clear(display);
+//         // qp_drawimage(display, (0), (0), my_image);
+//         // qp_flush(display);
+//         if (LAYER_BASE)
+//         my_anim = qp_animate(display, (0), (0), my_image);
+//     }
+//    }
 
 static painter_font_handle_t my_font;
 layer_state_t layer_state_set_user(layer_state_t state) {
     // qmk painter-make-font-image --font fonts/Fira-Code-Mono.ttf --size 11 -o ./generated/fira11.png
-    // qmk painter-convert-font-image --input ./generated/fira11.png -f mono4
+    // qmk painter-convert-font-image --input ./generated/fira11.png -f mono
     my_image = qp_load_image_mem(gfx_logo);
     my_font = qp_load_font_mem(font_fira11);
     if (my_image == NULL || my_font == NULL) return state;
@@ -162,7 +161,8 @@ layer_state_t layer_state_set_user(layer_state_t state) {
         case LAYER_RAISE:  text = "Nav & Fkeys"; break;
         default:           text = "Undefined";   break;
     }
-
+    display = qp_gc9a01_make_spi_device(240, 240, LCD_CS_PIN, LCD_DC_PIN, LCD_RST_PIN, 2, 0);
+    qp_init(display, QP_ROTATION_0);
     qp_clear(display);
 
     int16_t width = qp_textwidth(my_font, text);
