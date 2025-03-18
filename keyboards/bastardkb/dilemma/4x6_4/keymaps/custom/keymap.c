@@ -225,8 +225,8 @@ layer_state_t layer_state_set_user(layer_state_t state) {
         current_bg = layer_themes[layer].bg_color;
         current_text = layer_themes[layer].text_color;
     } else {
-        current_bg = RGB_BLACK;
-        current_text = RGB_WHITE;
+        current_bg = RGB565(0x00, 0x00, 0x00);  // black
+        current_text = RGB565(0xFF, 0xFF, 0xFF);  // white
     }
 
     // Start animation
