@@ -145,45 +145,60 @@ static painter_device_t display = NULL;
 //         my_anim = qp_animate(display, (0), (0), my_image);
 //     }
 //    }
+static const char *anim_text = NULL;
+static uint8_t anim_step = 0;
+static deferred_token anim_token;
+
+void animate_text(uint16_t trigger) {
+    if (!display || !my_font || !anim_text) return;
+
+    qp_rect(display, 0, 0, 240, 240, RGB_BLACK, true);
+
+    char partial[32] = {0};
+    memcpy(partial, anim_text, anim_step);
+
+    int16_t width = qp_textwidth(my_font, partial);
+    int16_t x = (240 - width) / 2;
+    int16_t y = (240 - my_font->line_height) / 2;
+
+    qp_drawtext(display, x, y, my_font, partial);
+    qp_flush(display);
+
+    if (anim_text[anim_step] != '\0') {
+        anim_step++;
+        anim_token = defer_exec(50, animate_text); // 50ms delay
+    }
+}
 
 layer_state_t layer_state_set_user(layer_state_t state) {
-    // Load the font once
     if (!my_font) {
-        my_font = qp_load_font_mem(&font_fira11);  // ✅ Correct use of & with .qff format
+        my_font = qp_load_font_mem(&font_fira11);
         if (!my_font) {
             dprint("Font load failed!\n");
             return state;
         }
     }
 
-    // Initialize display once
     if (!display) {
         display = qp_gc9a01_make_spi_device(240, 240, LCD_CS_PIN, LCD_DC_PIN, LCD_RST_PIN, 2, 0);
         qp_init(display, QP_ROTATION_0);
     }
 
-    // Determine text based on active layer
-    const char *text;
     switch (get_highest_layer(state)) {
-        case LAYER_BASE:   text = "Colemak";     break;
-        case LAYER_QWERTY: text = "QWERTY";      break;
-        case LAYER_LOWER:  text = "Symbols";     break;
-        case LAYER_RAISE:  text = "Nav & Fkeys"; break;
-        default:           text = "Undefined";   break;
+        case LAYER_BASE:   anim_text = "Colemak";     break;
+        case LAYER_QWERTY: anim_text = "QWERTY";      break;
+        case LAYER_LOWER:  anim_text = "Symbols";     break;
+        case LAYER_RAISE:  anim_text = "Nav & Fkeys"; break;
+        default:           anim_text = "Undefined";   break;
     }
 
-    // Clear display and draw text centered
-    qp_clear(display);
-    qp_rect(display, 0, 0, 240, 240, RGB_BLACK, true);
-    int16_t width = qp_textwidth(my_font, text);
-    int16_t x = (240 - width) / 2;
-    int16_t y = (240 - my_font->line_height) / 2;
-
-    qp_drawtext(display, x, y, my_font, text);
-    qp_flush(display);
-
+    // Start animation
+    anim_step = 1;
+    animate_text(0);  // Initial call
     return state;
 }
+
+
 layer_state_t default_layer_state_set_user(layer_state_t state) {
     // Reuse the drawing code from layer_state_set_user
     return layer_state_set_user(state);
