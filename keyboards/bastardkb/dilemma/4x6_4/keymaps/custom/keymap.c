@@ -205,24 +205,3 @@ layer_state_t default_layer_state_set_user(layer_state_t state) {
     // Reuse the drawing code from layer_state_set_user
     return layer_state_set_user(state);
 }
-
-void animate_text(uint16_t trigger) {
-    if (!display || !my_font || !anim_text) return;
-
-    qp_rect(display, 0, 0, 240, 240, RGB_BLACK, true);
-
-    char partial[32] = {0};
-    memcpy(partial, anim_text, anim_step);
-
-    int16_t width = qp_textwidth(my_font, partial);
-    int16_t x = (240 - width) / 2;
-    int16_t y = (240 - my_font->line_height) / 2;
-
-    qp_drawtext(display, x, y, my_font, partial);
-    qp_flush(display);
-
-    if (anim_text[anim_step] != '\0') {
-        anim_step++;
-        anim_token = defer_exec(50, animate_text); // 50ms delay
-    }
-}
