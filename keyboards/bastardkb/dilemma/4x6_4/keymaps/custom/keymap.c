@@ -49,9 +49,9 @@ typedef struct {
 } LayerTheme;
 
 const LayerTheme layer_themes[] = {
-    [LAYER_BASE]   = { RGB565(0x00, 0x00, 0x00), RGB565(0xFF, 0xFF, 0xFF) }, // Black bg, White text
-    [LAYER_QWERTY] = { RGB565(0xFF, 0x00, 0x00), RGB565(0xFF, 0xFF, 0xFF) }, // Red bg, White text
-    [LAYER_LOWER]  = { RGB565(0x00, 0x00, 0xFF), RGB565(0xFF, 0xFF, 0xFF) }, // Blue bg, White text
+    [LAYER_BASE]   = { RGB565(0xFF, 0x00, 0x00), RGB565(0xFF, 0xFF, 0xFF) }, // Red bg, White text
+    [LAYER_QWERTY] = { RGB565(0x00, 0x00, 0xFF), RGB565(0xFF, 0xFF, 0xFF) }, // Blue bg, White text
+    [LAYER_LOWER]  = { RGB565(0x00, 0x00, 0x00), RGB565(0xFF, 0xFF, 0xFF) }, // Black bg, White text
     [LAYER_RAISE]  = { RGB565(0xFF, 0xFF, 0xFF), RGB565(0x00, 0x00, 0x00) }, // White bg, Black text
 };
 
@@ -259,8 +259,8 @@ layer_state_t layer_state_set_user(layer_state_t state) {
     switch (layer) {
         case LAYER_BASE:   anim_text = "Colemak";     break;
         case LAYER_QWERTY: anim_text = "QWERTY";      break;
-        case LAYER_LOWER:  anim_text = "Symbols";     break;
-        case LAYER_RAISE:  anim_text = "Nav & Fkeys"; break;
+        case LAYER_LOWER:  anim_text = "Movement";    break;
+        case LAYER_RAISE:  anim_text = "F#&nums";     break;
         default:           anim_text = "Undefined";   break;
     }
 
