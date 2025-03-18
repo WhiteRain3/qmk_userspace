@@ -164,7 +164,6 @@ layer_state_t layer_state_set_user(layer_state_t state) {
     }
 
     qp_clear(display);
-    qp_drawimage(display, (0), (0), my_image);
 
     int16_t width = qp_textwidth(my_font, text);
     qp_drawtext(display, (240 - width), (240 - my_font->line_height), my_font, text);
