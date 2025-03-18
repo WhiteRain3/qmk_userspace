@@ -162,7 +162,7 @@ static painter_device_t display = NULL;
 //         my_anim = qp_animate(display, (0), (0), my_image);
 //     }
 //    }
-static layer_state_t default_layer_state = 1UL;
+extern layer_state_t default_layer_state;
 static const char *anim_text = NULL;
 static uint8_t anim_step = 0;
 static deferred_token anim_token;
@@ -201,8 +201,8 @@ uint32_t animate_text(uint32_t trigger, void *ctx) {
 
     uint8_t r, g, b;
     rgb565_to_rgb888(current_bg, &r, &g, &b);
-    RGB rgb = { r, g, b };
-    HSV hsv = rgb888_to_hsv(rgb);
+    uint8_t h, s, v;
+    rgb888_to_hsv(r, g, b, &h, &s, &v);
 
     qp_rect(display, 0, 0, 239, 239, 0, 255, 255, true);  // bright red
 
@@ -253,8 +253,6 @@ layer_state_t layer_state_set_user(layer_state_t state) {
         display = qp_gc9a01_make_spi_device(240, 240, LCD_CS_PIN, LCD_DC_PIN, LCD_RST_PIN, 2, 0);
         qp_init(display, QP_ROTATION_0);
     }
-
-    uint8_t layer = get_highest_layer(state);
 
     switch (layer) {
         case LAYER_BASE:   anim_text = "Colemak";     break;
