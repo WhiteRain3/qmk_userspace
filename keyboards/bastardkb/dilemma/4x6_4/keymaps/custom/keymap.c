@@ -237,7 +237,7 @@ uint32_t animate_text(uint32_t trigger, void *ctx) {
     }
     else
     {
-        anim_step == 0;
+        anim_step = 0;
     }
 
     return 0;
