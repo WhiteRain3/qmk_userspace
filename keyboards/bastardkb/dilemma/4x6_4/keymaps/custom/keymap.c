@@ -18,7 +18,7 @@
 #include QMK_KEYBOARD_H
 #include <qp.h>
 #include "generated/logo.qgf.h"
-#include "fira11.qff.c"
+#include "generated/fira11.qff.c"
 
 enum dilemma_keymap_layers {
     LAYER_BASE = 0,
