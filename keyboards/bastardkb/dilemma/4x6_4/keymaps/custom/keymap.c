@@ -167,7 +167,7 @@
      } else {
          current_bg = RGB565(0x00, 0x00, 0x00);  // Fallback to black
      }
-     int16_t width = qp_textwidth(my_font, partial);
+     int16_t width = qp_textwidth(my_font, "o");
      int16_t x = (240 - width) / 2;
      int16_t y = (240 - my_font->line_height) / 2;
      // Convert the RGB565 background color to HSV and update the display.
