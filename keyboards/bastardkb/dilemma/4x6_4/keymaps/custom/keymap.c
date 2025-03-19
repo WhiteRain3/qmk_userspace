@@ -18,7 +18,7 @@
  #include QMK_KEYBOARD_H
  #include <qp.h>
  #include "generated/logo.qgf.h"
- #include "generated/fira24.qff.h"
+ #include "generated/Anillo50.qff.h"
  #include "quantum/color.h"
 
  enum dilemma_keymap_layers {
@@ -148,7 +148,7 @@
 
      // Lazy-load the font if not already loaded.
      if (!my_font) {
-         my_font = qp_load_font_mem(&font_fira24);
+         my_font = qp_load_font_mem(&font_Anillo50);
          if (!my_font) {
              dprint("Font load failed!\n");
              return state;
@@ -167,17 +167,16 @@
      } else {
          current_bg = RGB565(0x00, 0x00, 0x00);  // Fallback to black
      }
-
+     int16_t x = (240 - width) / 2;
+     int16_t y = (240 - my_font->line_height) / 2;
      // Convert the RGB565 background color to HSV and update the display.
      uint8_t h_bg, s_bg, v_bg, r, g, b;
      rgb565_to_rgb888(current_bg, &r, &g, &b);
      rgb888_to_hsv(r, g, b, &h_bg, &s_bg, &v_bg);
-     for (int i = 0; i < 5; i++) {
-        qp_circle(display, 120, 120, 120 - i, h_bg, s_bg, v_bg, false);   // Outer ring (border)
-        qp_circle(display, 120, 121, 120 - i, h_bg, s_bg, v_bg, false);   // Outer ring (border)
-        qp_circle(display, 121, 121, 120 - i, h_bg, s_bg, v_bg, false);   // Outer ring (border)
-        qp_circle(display, 121, 120, 120 - i, h_bg, s_bg, v_bg, false);   // Outer ring (border)
-    }
+     qp_drawtext_recolor(display, x, y, my_font, "o",
+        h_bg, s_bg, v_bg,
+        0, 0, 0
+    );
     qp_flush(display);
 
      return state;
