@@ -65,7 +65,7 @@
    ),
 
    [LAYER_QWERTY] = LAYOUT(
-        KC_ESC,     KC_1,    KC_2,    KC_3,    KC_4,    KC_5,     KC_6,  KC_7,   KC_8,    KC_9,   KC_0,    LOCK,
+        KC_ESC,     KC_1,    KC_2,    KC_3,    KC_4,    KC_5,     KC_6,  KC_7,   KC_8,    KC_9,   KC_0,    LOCK,P
         KC_TAB,     KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,     KC_Y,  KC_U,   KC_I,    KC_O,   KC_P,    KC_BSLS,
         KC_LSFT,    KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,  KC_J,   KC_K,    KC_L,   KC_SCLN, KC_QUOT,
         KC_LCTL,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,  KC_M,   KC_COMM, KC_DOT, KC_SLSH, DF(0),
@@ -174,9 +174,13 @@
      uint8_t h_bg, s_bg, v_bg, r, g, b;
      rgb565_to_rgb888(current_bg, &r, &g, &b);
      rgb888_to_hsv(r, g, b, &h_bg, &s_bg, &v_bg);
-     qp_circle(display, 120, 120, 121, h_bg, s_bg, v_bg, true);   // Outer ring (border)
-     qp_circle(display, 120, 120, 112, 0, 0, 0, true);             // Inner cutout
-     qp_flush(display);
+     for (int i = 0; i < 5; i++) {
+        qp_circle(display, 120, 120, 120 - i, h_bg, s_bg, v_bg, false);   // Outer ring (border)
+        qp_circle(display, 120, 121, 120 - i, h_bg, s_bg, v_bg, false);   // Outer ring (border)
+        qp_circle(display, 121, 121, 120 - i, h_bg, s_bg, v_bg, false);   // Outer ring (border)
+        qp_circle(display, 121, 120, 120 - i, h_bg, s_bg, v_bg, false);   // Outer ring (border)
+    }
+    qp_flush(display);
 
      return state;
  }
