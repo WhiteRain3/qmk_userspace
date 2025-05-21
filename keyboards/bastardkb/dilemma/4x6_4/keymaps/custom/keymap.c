@@ -18,7 +18,7 @@
 #include QMK_KEYBOARD_H
 #include <qp.h>
 #include "generated/logo.qgf.h"
-#include "generated/Anillo240.qff.h"
+#include "generated/oAnillo100.qff.h"
 #include "quantum/color.h"
 
 enum dilemma_keymap_layers {
@@ -158,7 +158,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 
     // Lazy-load the font if not already loaded.
     if (!my_font) {
-        my_font = qp_load_font_mem(&font_Anillo240);
+        my_font = qp_load_font_mem(&font_oAnillo100);
         if (!my_font) {
             dprint("Font load failed!\n");
             return state;
@@ -177,18 +177,18 @@ layer_state_t layer_state_set_user(layer_state_t state) {
     } else {
         current_bg = RGB565(0x00, 0x00, 0x00);  // Fallback to black
     }
-    int16_t width = qp_textwidth(my_font, "o");
+    //The char to draw
+    const char *big_char = "o";
+    int16_t width = qp_textwidth(my_font, big_char);
+    int16_t height = my_font->line_height;
     int16_t x = (240 - width) / 2;
-    int16_t y = (240 - my_font->line_height) / 2;
+    int16_t y = (240 - height) / 2;
     // Convert the RGB565 background color to HSV and update the display.
     uint8_t h_bg, s_bg, v_bg, r, g, b;
     rgb565_to_rgb888(current_bg, &r, &g, &b);
     rgb888_to_hsv(r, g, b, &h_bg, &s_bg, &v_bg);
-    qp_drawtext_recolor(display, x, y, my_font, "o",
-    h_bg, s_bg, v_bg,
-    0, 0, 0
-);
-qp_flush(display);
+    qp_drawtext_recolor(display, x, y, my_font, "o", h_bg, s_bg, v_bg, 0, 0, 0);
+    qp_flush(display);
 
     return state;
 }

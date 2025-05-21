@@ -4,4 +4,4 @@ ENCODER_MAP_ENABLE = yes
 QUANTUM_PAINTER_ENABLE = yes
 QUANTUM_PAINTER_DRIVERS += gc9a01_spi
 SRC += generated/logo.qgf.c
-SRC += generated/Anillo240.qff.c
+SRC += generated/oAnillo100.qff.c
