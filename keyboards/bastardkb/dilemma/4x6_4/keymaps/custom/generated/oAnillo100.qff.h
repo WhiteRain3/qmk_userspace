@@ -12,4 +12,4 @@
 #include <qp.h>
 
 extern const uint32_t font_oAnillo100_length;
-extern const uint8_t  font_oAnillo100[72634];
+extern const uint8_t  font_oAnillo100[7764];
