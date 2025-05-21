@@ -18,7 +18,7 @@
 #include QMK_KEYBOARD_H
 #include <qp.h>
 #include "generated/logo.qgf.h"
-#include "generated/Anillo30.qff.h"
+#include "generated/Anillo240.qff.h"
 #include "quantum/color.h"
 
 enum dilemma_keymap_layers {
@@ -158,7 +158,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 
     // Lazy-load the font if not already loaded.
     if (!my_font) {
-        my_font = qp_load_font_mem(&font_Anillo30);
+        my_font = qp_load_font_mem(&font_Anillo240);
         if (!my_font) {
             dprint("Font load failed!\n");
             return state;
