@@ -22,7 +22,10 @@
 #include "quantum/color.h"
 
 // --- TAP DANCE FOR WINDOWS KEY ---
-enum { TD_GUI_DF1 = 0 };
+enum {
+    TD_GUI_DF0 = 0, // Add this one!
+    TD_GUI_DF1
+};
 
 void dance_gui_finished(tap_dance_state_t *state, void *user_data) {
     if (state->count == 1) {
@@ -37,7 +40,8 @@ void dance_gui_reset(tap_dance_state_t *state, void *user_data) {
 }
 
 tap_dance_action_t tap_dance_actions[] = {
-    [TD_GUI_DF1] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_gui_finished, dance_gui_reset),
+    [TD_GUI_DF0] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_gui0_finished, dance_gui0_reset),
+    [TD_GUI_DF1] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_gui1_finished, dance_gui1_reset),
 };
 
 // --- DISPLAY SETUP ---
