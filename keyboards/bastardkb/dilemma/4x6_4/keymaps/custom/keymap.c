@@ -17,7 +17,7 @@
 */
 #include QMK_KEYBOARD_H
 #include <qp.h>
-#include "generated/font_ring.qff.h"
+#include "generated/ring.qff.h"
 #include "generated/Anillo50.h"
 #include "quantum/color.h"
 
