@@ -17,33 +17,33 @@
 */
 #include QMK_KEYBOARD_H
 #include <qp.h>
+#include "logo.qgf.h"
 #include "generated/ring.qff.h"
-#include "generated/Anillo50.h"
 #include "quantum/color.h"
 
-// --- TAP DANCE DEFINITIONS ---
-enum {
-    TD_GUI_DF1 = 0
-};
+// --- TAP DANCE FOR WINDOWS KEY ---
+enum { TD_GUI_DF1 = 0 };
 
-// Define the behavior: Single tap = LGUI, Double tap = Switch to Layer 1 (Qwerty)
 void dance_gui_finished(tap_dance_state_t *state, void *user_data) {
     if (state->count == 1) {
         register_code(KC_LGUI);
     } else if (state->count == 2) {
-        default_layer_set(1UL << LAYER_QWERTY);
+        default_layer_set(1UL << 1); // Switch to Layer 1 (Qwerty)
     }
 }
 
 void dance_gui_reset(tap_dance_state_t *state, void *user_data) {
-    if (state->count == 1) {
-        unregister_code(KC_LGUI);
-    }
+    if (state->count == 1) unregister_code(KC_LGUI);
 }
 
 tap_dance_action_t tap_dance_actions[] = {
     [TD_GUI_DF1] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_gui_finished, dance_gui_reset),
 };
+
+// --- DISPLAY SETUP ---
+static painter_font_handle_t  my_font = NULL;
+static painter_image_handle_t my_logo = NULL;
+static painter_device_t       display = NULL;
 // -----------------------------
 
 enum dilemma_keymap_layers {
@@ -136,9 +136,6 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 };
 #endif  // ENCODER_MAP_ENABLE
 
-// Remove unused variables and commented-out code to reduce memory footprint.
-static painter_font_handle_t my_font = NULL;
-static painter_device_t display = NULL;
 
 extern layer_state_t default_layer_state;
 
@@ -179,44 +176,28 @@ static inline void rgb888_to_hsv(uint8_t r, uint8_t g, uint8_t b, uint8_t *h, ui
 // qmk painter-convert-font-image --input ./generated/fira11.png -f mono4
 
 layer_state_t layer_state_set_user(layer_state_t state) {
-    // Combine the current state with the default layer state.
-    layer_state_t merged_state = state | default_layer_state;
-    uint8_t layer = get_highest_layer(merged_state);
+    uint8_t layer = get_highest_layer(state | default_layer_state);
 
-    // Lazy-load the font if not already loaded.
-    if (!my_font) {
-        my_font = qp_load_font_mem(&font_ring);
-        if (!my_font) {
-            dprint("Font load failed!\n");
-            return state;
-        }
-    }
-    // Lazy initialize the display device.
     if (!display) {
         display = qp_gc9a01_make_spi_device(240, 240, LCD_CS_PIN, LCD_DC_PIN, LCD_RST_PIN, 2, 0);
         qp_init(display, QP_ROTATION_0);
     }
 
-    // Determine the theme for the active layer using only the background color.
-    uint16_t current_bg;
-    if (layer < (sizeof(layer_themes) / sizeof(layer_themes[0]))) {
-        current_bg = layer_themes[layer].bg_color;
-    } else {
-        current_bg = RGB565(0x00, 0x00, 0x00);  // Fallback to black
-    }
-    //The char to draw
-    const char *big_char = "o";
-    int16_t width = qp_textwidth(my_font, big_char);
-    int16_t height = my_font->line_height;
-    int16_t x = (240 - width) / 2;
-    int16_t y = (240 - height) / 2;
-    // Convert the RGB565 background color to HSV and update the display.
-    uint8_t h_bg, s_bg, v_bg, r, g, b;
-    rgb565_to_rgb888(current_bg, &r, &g, &b);
-    rgb888_to_hsv(r, g, b, &h_bg, &s_bg, &v_bg);
-    qp_drawtext_recolor(display, x, y, my_font, "o", h_bg, s_bg, v_bg, 0, 0, 0);
-    qp_flush(display);
+    // Use the variable names generated in your .h files
+    if (!my_font) my_font = qp_load_font_mem(&font_ring);
+    if (!my_logo) my_logo = qp_load_image_mem(&gfx_logo);
 
+    uint16_t current_bg = (layer < 4) ? layer_themes[layer].bg_color : 0x0000;
+    uint8_t h, s, v, r, g, b;
+    rgb565_to_rgb888(current_bg, &r, &g, &b);
+    rgb888_to_hsv(r, g, b, &h, &s, &v);
+
+    // DRAWING: Wipe screen, draw Ring, draw Logo
+    qp_rect(display, 0, 0, 239, 239, 0, 0, 0, true);
+    if (my_font) qp_drawtext_recolor(display, 20, 20, my_font, "o", h, s, v, 0, 0, 0);
+    if (my_logo) qp_drawimage(display, 80, 80, my_logo);
+
+    qp_flush(display);
     return state;
 }
 
