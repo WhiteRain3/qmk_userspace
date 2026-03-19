@@ -10,5 +10,5 @@ QUANTUM_PAINTER_DRIVERS += gc9a01_spi
 VPATH += generated
 
 # Source Files: Do NOT use absolute paths here
-SRC += generated/ring.qff.c
-SRC += generated/logo.qgf.c
+SRC += ring.qff.c
+SRC += logo.qgf.c
