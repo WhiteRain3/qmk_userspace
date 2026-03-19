@@ -91,10 +91,10 @@ static uint8_t                last_layer = 255;
 
 typedef struct { uint16_t ring_color; } LayerTheme;
 const uint16_t layer_colors[] = {
-    [LAYER_BASE]   = RGB565(0xFF, 0x00, 0x00), // RED
-    [LAYER_QWERTY] = RGB565(0x00, 0x00, 0xFF), // BLUE
-    [LAYER_LOWER]  = RGB565(0x00, 0xFF, 0x00), // GREEN
-    [LAYER_RAISE]  = RGB565(0xFF, 0xFF, 0xFF), // WHITE
+    [LAYER_BASE]   = RGB565(0xFF, 0xFF, 0xFF),
+    [LAYER_QWERTY] = RGB565(0xFF, 0x00, 0x00),
+    [LAYER_LOWER]  = RGB565(0x00, 0xFF, 0x00),
+    [LAYER_RAISE]  = RGB565(0x00, 0x00, 0xFF),
 };
 
 static inline void rgb565_to_hsv(uint16_t color, uint8_t *h, uint8_t *s, uint8_t *v) {
