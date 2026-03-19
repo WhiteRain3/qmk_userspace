@@ -17,7 +17,7 @@
 */
 #include QMK_KEYBOARD_H
 #include <qp.h>
-#include "generated/logo.qgf.h"
+#include "generated/font_ring.qff.h"
 #include "generated/Anillo50.h"
 #include "quantum/color.h"
 
@@ -185,7 +185,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 
     // Lazy-load the font if not already loaded.
     if (!my_font) {
-        my_font = qp_load_font_mem(&qff_font);
+        my_font = qp_load_font_mem(&font_ring);
         if (!my_font) {
             dprint("Font load failed!\n");
             return state;
