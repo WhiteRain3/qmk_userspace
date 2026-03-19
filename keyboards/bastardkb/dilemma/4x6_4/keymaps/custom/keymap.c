@@ -4,6 +4,12 @@
 #include "generated/ring.qff.h"
 #include "quantum/color.h"
 
+enum dilemma_keymap_layers {
+    LAYER_BASE = 0,
+    LAYER_QWERTY,
+    LAYER_LOWER,
+    LAYER_RAISE,
+};
 // --- TAP DANCE SETUP ---
 enum {
     TD_GUI_DF0 = 0,
@@ -13,7 +19,7 @@ enum {
 // Functions for TD_GUI_DF0 (Base Layer)
 void dance_gui0_finished(tap_dance_state_t *state, void *user_data) {
     if (state->count == 1) register_code(KC_LGUI);
-    else if (state->count == 2) default_layer_set(1UL << LAYER_BASE);
+    else if (state->count == 2) default_layer_set(1UL << LAYER_BASE); // Now it knows what LAYER_BASE is!
 }
 void dance_gui0_reset(tap_dance_state_t *state, void *user_data) {
     unregister_code(KC_LGUI);
@@ -38,13 +44,6 @@ static painter_font_handle_t  my_font = NULL;
 static painter_image_handle_t my_logo = NULL;
 static painter_device_t       display = NULL;
 static uint8_t                last_layer = 255;
-
-enum dilemma_keymap_layers {
-    LAYER_BASE = 0,
-    LAYER_QWERTY,
-    LAYER_LOWER,
-    LAYER_RAISE,
-};
 
 #define RGB565(r, g, b) ((((r) & 0xF8) << 8) | (((g) & 0xFC) << 3) | ((b) >> 3))
 
