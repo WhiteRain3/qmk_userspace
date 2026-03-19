@@ -115,18 +115,33 @@ static inline void rgb565_to_hsv(uint16_t color, uint8_t *h, uint8_t *s, uint8_t
 void update_display_ui(uint8_t layer) {
     if (!display) return;
 
+    // 1. Get the RGB565 color from our theme
     uint16_t color = (layer < 4) ? layer_colors[layer] : 0;
 
-    // Extract RGB components for QMK's drawing function
+    // 2. Convert RGB565 to HSV (Hue, Sat, Val) because qp_circle requires it
+    uint8_t h, s, v;
+    // Manual conversion logic for speed
     uint8_t r = ((color >> 11) & 0x1F) << 3;
     uint8_t g = ((color >> 5) & 0x3F) << 2;
     uint8_t b = (color & 0x1F) << 3;
 
-    // DRAWING THE RING:
-    // We draw two circles with a radius of 118 and 119
-    // to create a 2-pixel thick border at the very edge of the 240x240 screen.
-    qp_circle(display, 120, 120, 119, r, g, b);
-    qp_circle(display, 120, 120, 118, r, g, b);
+    uint8_t max = (r > g) ? ((r > b) ? r : b) : ((g > b) ? g : b);
+    uint8_t min = (r < g) ? ((r < b) ? r : b) : ((g < b) ? g : b);
+    v = max;
+    uint8_t delta = max - min;
+    if (max == 0 || delta == 0) { s = 0; h = 0; }
+    else {
+        s = (delta * 255) / max;
+        if (max == r) h = 43 * (g - b) / delta;
+        else if (max == g) h = 85 + 43 * (b - r) / delta;
+        else h = 171 + 43 * (r - g) / delta;
+    }
+
+    // 3. DRAWING THE RING (8 arguments total)
+    // qp_circle(device, x, y, radius, hue, sat, val, filled)
+    // We use 'false' for 'filled' so it's just an outline.
+    qp_circle(display, 120, 120, 119, h, s, v, false);
+    qp_circle(display, 120, 120, 118, h, s, v, false);
 
     qp_flush(display);
 }
