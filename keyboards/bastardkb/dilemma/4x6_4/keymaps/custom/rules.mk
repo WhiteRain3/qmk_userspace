@@ -6,9 +6,6 @@ TAP_DANCE_ENABLE = yes
 QUANTUM_PAINTER_ENABLE = yes
 QUANTUM_PAINTER_DRIVERS += gc9a01_spi
 
-# Pathing: This tells the compiler to look inside your generated folder
-VPATH += generated
-
 # Source Files: Do NOT use absolute paths here
-SRC += ring.qff.c
-SRC += logo.qgf.c
+SRC += generated/ring.qff.c
+SRC += generated/logo.qgf.c

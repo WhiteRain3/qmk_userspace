@@ -17,8 +17,8 @@
 */
 #include QMK_KEYBOARD_H
 #include <qp.h>
-#include "logo.qgf.h"
-#include "ring.qff.h"
+#include "generated/logo.qgf.h"
+#include "generated/ring.qff.h"
 #include "quantum/color.h"
 
 // --- TAP DANCE FOR WINDOWS KEY ---
