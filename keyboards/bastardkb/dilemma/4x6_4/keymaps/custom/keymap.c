@@ -59,6 +59,7 @@ enum dilemma_keymap_layers {
 #define RAISE MO(LAYER_RAISE)
 #define MT_ATDE MT(MOD_LALT, KC_DEL)
 #define KC_G_DF1 TD(TD_GUI_DF1) // Shortcut for our new Tap Dance
+#define KC_G_DF0 TD(TD_GUI_DF0)
 
 #ifndef POINTING_DEVICE_ENABLE
 #    define DRGSCRL KC_NO
@@ -94,7 +95,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_TAB,     KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,     KC_Y,  KC_U,   KC_I,    KC_O,   KC_P,    KC_BSLS,
     KC_LSFT,    KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,  KC_J,   KC_K,    KC_L,   KC_SCLN, KC_QUOT,
     KC_LCTL,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,  KC_M,   KC_COMM, KC_DOT, KC_SLSH, DF(0),
-                        KC_G_DF1, MT_ATDE,  KC_SPC,   LOWER,    RAISE, KC_BSPC, KC_ENT, _______
+                        KC_G_DF0, MT_ATDE,  KC_SPC,   LOWER,    RAISE, KC_BSPC, KC_ENT, _______
 ),
 
 [LAYER_LOWER] = LAYOUT(
@@ -175,29 +176,48 @@ static inline void rgb888_to_hsv(uint8_t r, uint8_t g, uint8_t b, uint8_t *h, ui
 // qmk painter-make-font-image --font fonts/Fira-Code-Mono.ttf --size 11 -o ./generated/fira11.png
 // qmk painter-convert-font-image --input ./generated/fira11.png -f mono4
 
-layer_state_t layer_state_set_user(layer_state_t state) {
-    uint8_t layer = get_highest_layer(state | default_layer_state);
+static uint8_t last_layer = 255; // Track the last layer to prevent flickering
 
+layer_state_t layer_state_set_user(layer_state_t state) {
+    layer_state_t merged_state = state | default_layer_state;
+    uint8_t layer = get_highest_layer(merged_state);
+
+    // Initial Display Setup
     if (!display) {
-        display = qp_gc9a01_make_spi_device(240, 240, LCD_CS_PIN, LCD_DC_PIN, LCD_RST_PIN, 2, 0);
+        // CHANGED: SPI divisor set to 4 for stability (reduces lines/gaps)
+        display = qp_gc9a01_make_spi_device(240, 240, LCD_CS_PIN, LCD_DC_PIN, LCD_RST_PIN, 4, 0);
         qp_init(display, QP_ROTATION_0);
     }
 
-    // Use the variable names generated in your .h files
-    if (!my_font) my_font = qp_load_font_mem(&font_ring);
-    if (!my_logo) my_logo = qp_load_image_mem(&gfx_logo);
+    // ONLY redraw if the layer has actually changed
+    if (layer != last_layer) {
+        last_layer = layer;
 
-    uint16_t current_bg = (layer < 4) ? layer_themes[layer].bg_color : 0x0000;
-    uint8_t h, s, v, r, g, b;
-    rgb565_to_rgb888(current_bg, &r, &g, &b);
-    rgb888_to_hsv(r, g, b, &h, &s, &v);
+        if (!my_font) my_font = qp_load_font_mem(&font_ring);
+        if (!my_logo) my_logo = qp_load_image_mem(&gfx_logo);
 
-    // DRAWING: Wipe screen, draw Ring, draw Logo
-    qp_rect(display, 0, 0, 239, 239, 0, 0, 0, true);
-    if (my_font) qp_drawtext_recolor(display, 20, 20, my_font, "o", h, s, v, 0, 0, 0);
-    if (my_logo) qp_drawimage(display, 80, 80, my_logo);
+        // Calculate colors based on your layer_themes array
+        uint16_t current_bg = (layer < 4) ? layer_themes[layer].bg_color : 0x0000;
+        uint8_t h, s, v, r, g, b;
+        rgb565_to_rgb888(current_bg, &r, &g, &b);
+        rgb888_to_hsv(r, g, b, &h, &s, &v);
 
-    qp_flush(display);
+        // 1. Clear the screen (Use qp_clear if qp_rect is acting up)
+        qp_rect(display, 0, 0, 239, 239, 0, 0, 0, true);
+
+        // 2. Draw the Ring (Centered: (240-200)/2 = 20)
+        if (my_font) {
+            qp_drawtext_recolor(display, 20, 20, my_font, "o", h, s, v, 0, 0, 0);
+        }
+
+        // 3. Draw the Logo (Assuming it's 80x80, centered: (240-80)/2 = 80)
+        if (my_logo) {
+            qp_drawimage(display, 80, 80, my_logo);
+        }
+
+        qp_flush(display);
+    }
+
     return state;
 }
 
