@@ -18,8 +18,33 @@
 #include QMK_KEYBOARD_H
 #include <qp.h>
 #include "generated/logo.qgf.h"
-#include "generated/qff_qmk.h"
+#include "generated/Anillo50.h"
 #include "quantum/color.h"
+
+// --- TAP DANCE DEFINITIONS ---
+enum {
+    TD_GUI_DF1 = 0
+};
+
+// Define the behavior: Single tap = LGUI, Double tap = Switch to Layer 1 (Qwerty)
+void dance_gui_finished(tap_dance_state_t *state, void *user_data) {
+    if (state->count == 1) {
+        register_code(KC_LGUI);
+    } else if (state->count == 2) {
+        default_layer_set(1UL << LAYER_QWERTY);
+    }
+}
+
+void dance_gui_reset(tap_dance_state_t *state, void *user_data) {
+    if (state->count == 1) {
+        unregister_code(KC_LGUI);
+    }
+}
+
+tap_dance_action_t tap_dance_actions[] = {
+    [TD_GUI_DF1] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_gui_finished, dance_gui_reset),
+};
+// -----------------------------
 
 enum dilemma_keymap_layers {
     LAYER_BASE = 0,
@@ -27,11 +52,13 @@ enum dilemma_keymap_layers {
     LAYER_LOWER,
     LAYER_RAISE,
 };
+
 #define RGB565(r, g, b) ((((r) & 0xF8) << 8) | (((g) & 0xFC) << 3) | ((b) >> 3))
 
 #define LOWER MO(LAYER_LOWER)
 #define RAISE MO(LAYER_RAISE)
 #define MT_ATDE MT(MOD_LALT, KC_DEL)
+#define KC_G_DF1 TD(TD_GUI_DF1) // Shortcut for our new Tap Dance
 
 #ifndef POINTING_DEVICE_ENABLE
 #    define DRGSCRL KC_NO
@@ -59,7 +86,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_TAB,    KC_Q,    KC_W,    KC_F,    KC_P,    KC_B,    KC_J,  KC_L,    KC_U,    KC_Y,         KC_SCLN, KC_BSLS,
     KC_LCTL,   KC_A,    KC_R,    KC_S,    KC_T,    KC_G,    KC_M,  KC_N,    KC_E,    KC_I,         KC_O,    KC_QUOT,
     KC_LSFT,   KC_Z,    KC_X,    KC_C,    KC_D,    KC_V,    KC_K,  KC_H,    KC_COMM, KC_DOT,       KC_SLSH, DF(1),
-                        KC_LGUI, KC_LALT,  KC_SPC,   LOWER,    RAISE, KC_BSPC, KC_ENT,  LT(2,KC_MPLY)
+                        KC_G_DF1, MT_ATDE,  KC_SPC,   LOWER,    RAISE, KC_BSPC, KC_ENT,  LT(2,KC_MPLY)
 ),
 
 [LAYER_QWERTY] = LAYOUT(
@@ -67,7 +94,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_TAB,     KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,     KC_Y,  KC_U,   KC_I,    KC_O,   KC_P,    KC_BSLS,
     KC_LSFT,    KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,  KC_J,   KC_K,    KC_L,   KC_SCLN, KC_QUOT,
     KC_LCTL,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,  KC_M,   KC_COMM, KC_DOT, KC_SLSH, DF(0),
-                        KC_LGUI, MT_ATDE,  KC_SPC,   LOWER,    RAISE, KC_BSPC, KC_ENT, _______
+                        KC_G_DF1, MT_ATDE,  KC_SPC,   LOWER,    RAISE, KC_BSPC, KC_ENT, _______
 ),
 
 [LAYER_LOWER] = LAYOUT(
@@ -80,10 +107,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 [LAYER_RAISE] = LAYOUT(
     KC_F12,   KC_F1,  KC_F2,   KC_F3,   KC_F4,   KC_F5,      KC_F6,     KC_F7,   KC_F8,   KC_F9,  KC_F10,  KC_F11,
-    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,    XXXXXXX,   KC_P7,   KC_P8,   KC_P9,  KC_PAST, XXXXXXX,
-    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,    XXXXXXX,   KC_P4,   KC_P5,   KC_P6,  XXXXXXX, KC_CAPS,
-    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,    XXXXXXX,   KC_P1,   KC_P2,   KC_P3,  KC_PSLS, KC_CALC,
-                    _______,  _______,  _______,  XXXXXXX,    _______, _______,  _______,  KC_P0
+    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,    KC_PPLS,   KC_P7,   KC_P8,   KC_P9,  KC_PAST, XXXXXXX,
+    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,    KC_PMNS,   KC_P4,   KC_P5,   KC_P6,  KC_PSLS, KC_CAPS,
+    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,    KC_P0,   KC_P1,   KC_P2,   KC_P3,  KC_PDOT, KC_CALC,
+                    _______,  _______,  _______,  XXXXXXX,    _______, _______,  _______,  XXXXXXX
 )
 };
 
