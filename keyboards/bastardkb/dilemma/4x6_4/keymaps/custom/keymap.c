@@ -87,25 +87,21 @@ const uint16_t PROGMEM encoder_map[4][NUM_ENCODERS][NUM_DIRECTIONS] = {
 static painter_font_handle_t  my_font = NULL;
 static painter_image_handle_t my_logo = NULL;
 static painter_device_t       display = NULL;
-static uint8_t                last_reported_layer = 255;
+static uint8_t                last_layer = 255; // Tracker to prevent redundant draws
 
 #define RGB565(r, g, b) ((((r) & 0xF8) << 8) | (((g) & 0xFC) << 3) | ((b) >> 3))
 
-typedef struct { uint16_t bg_color; } LayerTheme;
+typedef struct { uint16_t ring_color; } LayerTheme;
 const LayerTheme layer_themes[] = {
-    [LAYER_BASE]   = { RGB565(0xFF, 0x00, 0x00) },
-    [LAYER_QWERTY] = { RGB565(0x00, 0x00, 0xFF) },
-    [LAYER_LOWER]  = { RGB565(0x00, 0x00, 0x00) },
-    [LAYER_RAISE]  = { RGB565(0x33, 0x33, 0x33) },
+    [LAYER_BASE]   = { RGB565(0xFF, 0x00, 0x00) }, // RED (Colemak)
+    [LAYER_QWERTY] = { RGB565(0x00, 0x00, 0xFF) }, // BLUE (Qwerty)
+    [LAYER_LOWER]  = { RGB565(0x00, 0xFF, 0x00) }, // GREEN
+    [LAYER_RAISE]  = { RGB565(0xFF, 0xFF, 0xFF) }, // WHITE
 };
-
-static inline void rgb565_to_rgb888(uint16_t rgb565, uint8_t *r, uint8_t *g, uint8_t *b) {
-    *r = ((rgb565 >> 11) & 0x1F) << 3;
-    *g = ((rgb565 >> 5) & 0x3F) << 2;
-    *b = (rgb565 & 0x1F) << 3;
-}
-
-static inline void rgb888_to_hsv(uint8_t r, uint8_t g, uint8_t b, uint8_t *h, uint8_t *s, uint8_t *v) {
+static inline void rgb565_to_hsv(uint16_t color, uint8_t *h, uint8_t *s, uint8_t *v) {
+    uint8_t r = ((color >> 11) & 0x1F) << 3;
+    uint8_t g = ((color >> 5) & 0x3F) << 2;
+    uint8_t b = (color & 0x1F) << 3;
     uint8_t max = (r > g) ? ((r > b) ? r : b) : ((g > b) ? g : b);
     uint8_t min = (r < g) ? ((r < b) ? r : b) : ((g < b) ? g : b);
     *v = max;
@@ -117,34 +113,51 @@ static inline void rgb888_to_hsv(uint8_t r, uint8_t g, uint8_t b, uint8_t *h, ui
     else *h = 171 + 43 * (r - g) / delta;
 }
 
-// 6. SCREEN REFRESH
-void update_display_now(uint8_t layer) {
+void update_display_ui(uint8_t layer) {
     if (!display) return;
+
+    // Load assets only if necessary
     if (!my_font) my_font = qp_load_font_mem(&font_ring);
-    if (!my_logo) my_logo = qp_load_image_mem(&gfx_logo);
 
-    uint16_t color_565 = (layer < 4) ? layer_themes[layer].bg_color : 0x0000;
-    uint8_t r, g, b, h, s, v;
-    rgb565_to_rgb888(color_565, &r, &g, &b);
-    rgb888_to_hsv(r, g, b, &h, &s, &v);
+    // Get theme color
+    uint16_t color = (layer < 4) ? layer_themes[layer].ring_color : 0;
+    uint8_t h, s, v;
+    rgb565_to_hsv(color, &h, &s, &v);
 
-    qp_rect(display, 0, 0, 239, 239, 0, 0, 0, true);
-    if (my_font) qp_drawtext_recolor(display, 20, 20, my_font, "o", h, s, v, 0, 0, 0);
-    // Centered for 120x120 logo ( (240-120)/2 = 60 )
-    if (my_logo) qp_drawimage(display, 60, 60, my_logo);
+    // Draw the "Ring" (the character 'o' from your custom font)
+    // We do NOT draw the image here. We only draw the font over the existing image.
+    if (my_font) {
+        // Centering math (assumes font 'o' is designed to be a 240x240 ring)
+        qp_drawtext_recolor(display, 0, 0, my_font, "o", h, s, v, 0, 0, 0);
+    }
     qp_flush(display);
 }
 
 layer_state_t layer_state_set_user(layer_state_t state) {
     uint8_t current_layer = get_highest_layer(state);
+
+    // INITIALIZATION (Runs once)
     if (!display) {
-        display = qp_gc9a01_make_spi_device(240, 240, LCD_CS_PIN, LCD_DC_PIN, LCD_RST_PIN, 8, 0);
+        // Mode 3 (the last '3') fixes the pixel shifting/tiling issue
+        display = qp_gc9a01_make_spi_device(240, 240, LCD_CS_PIN, LCD_DC_PIN, LCD_RST_PIN, 8, 3);
         qp_init(display, QP_ROTATION_0);
-        update_display_now(current_layer);
+
+        // Draw the background image ONCE and never again
+        if (!my_logo) my_logo = qp_load_image_mem(&gfx_logo);
+        if (my_logo) qp_drawimage(display, 0, 0, my_logo);
     }
-    if (current_layer != last_reported_layer) {
-        last_reported_layer = current_layer;
-        update_display_now(current_layer);
+
+    // UPDATE RING (Only if layer actually changed)
+    if (current_layer != last_layer) {
+        last_layer = current_layer;
+        update_display_ui(current_layer);
     }
+
     return state;
+}
+
+// Ensure the default layer (Base/Qwerty) also updates the screen
+layer_state_t default_layer_state_set_user(layer_state_t state) {
+    last_layer = 255; // Force a redraw
+    return layer_state_set_user(state);
 }
