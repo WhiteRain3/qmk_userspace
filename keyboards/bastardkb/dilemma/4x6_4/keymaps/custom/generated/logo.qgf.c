@@ -14,7 +14,7 @@
 
 #include <qp.h>
 
-const uint32_t gfx_logo__length = 18706;
+const uint32_t gfx_logo_length = 18706;
 
 // clang-format off
 const uint8_t gfx_logo[18706] = {
