@@ -143,7 +143,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
         update_display_now(current_layer);
     }
     if (current_layer != last_reported_layer) {
-        last_reported_layer = current_layer;D
+        last_reported_layer = current_layer;
         update_display_now(current_layer);
     }
     return state;
