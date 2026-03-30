@@ -22,8 +22,15 @@
 #define SPLIT_LED_STATE_ENABLE
 
 #define ENCODER_RESOLUTION 4
-#undef POINTING_DEVICE_GESTURES_SCROLL_ENABLE
 
 #define LCD_DC_PIN GP11
 #define LCD_CS_PIN GP12
 #define LCD_RST_PIN GP13
+
+#define CIRQUE_PINNACLE_TAP_ENABLE
+
+// Optional but highly recommended: Tap the upper right corner of the pad for a right-click!
+#define CIRQUE_PINNACLE_SECONDARY_TAP_ENABLE
+
+// Restore your circular edge scrolling
+#define POINTING_DEVICE_GESTURES_SCROLL_ENABLE
