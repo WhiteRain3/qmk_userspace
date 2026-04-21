@@ -11,6 +11,10 @@ enum dilemma_keymap_layers {
     LAYER_RAISE,
 };
 
+enum custom_keycodes {
+    KC_DISP_TOG = SAFE_RANGE,
+};
+
 // 2. TAP DANCE IDs & FUNCTIONS
 enum {
     TD_GUI_DF0 = 0,
@@ -57,7 +61,7 @@ const uint16_t PROGMEM keymaps[4][MATRIX_ROWS][MATRIX_COLS] = {
                           KC_G_DF0, MT_ATDE, KC_SPC,  LOWER,   RAISE, KC_BSPC, KC_ENT,  _______
     ),
     [LAYER_LOWER] = LAYOUT(
-        _______, RGB_TOG, RGB_RMOD, RGB_MOD, RGB_VAD, RGB_VAI, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
+        _______, RGB_TOG, RGB_RMOD, RGB_MOD, RGB_VAD, RGB_VAI, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_DISP_TOG,
         _______, KC_PGUP, C(KC_LEFT), KC_UP, C(KC_RGHT), KC_HOME, KC_GRV, S(KC_9), S(KC_0), KC_EQL, S(KC_EQL), XXXXXXX,
         _______, KC_PGDN, KC_LEFT, KC_DOWN, KC_RGHT, KC_END, S(KC_GRV), KC_LBRC, KC_RBRC, S(KC_MINS), KC_MINS, XXXXXXX,
         _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, S(KC_LBRC), S(KC_RBRC), XXXXXXX, XXXXXXX, XXXXXXX,
@@ -77,8 +81,8 @@ const uint16_t PROGMEM keymaps[4][MATRIX_ROWS][MATRIX_COLS] = {
 const uint16_t PROGMEM encoder_map[4][NUM_ENCODERS][NUM_DIRECTIONS] = {
     [LAYER_BASE]    = {ENCODER_CCW_CW(KC_VOLD, KC_VOLU), ENCODER_CCW_CW(KC_VOLU, KC_VOLD)},
     [LAYER_QWERTY]  = {ENCODER_CCW_CW(KC_VOLD, KC_VOLU), ENCODER_CCW_CW(KC_VOLU, KC_VOLD)},
-    [LAYER_LOWER]   = {ENCODER_CCW_CW(KC_MS_WH_DOWN, KC_MS_WH_UP), ENCODER_CCW_CW(KC_MNXT, KC_MPRV)},
-    [LAYER_RAISE]   = {ENCODER_CCW_CW(KC_MPRV, KC_MNXT), ENCODER_CCW_CW(KC_RGHT, KC_LEFT)},
+    [LAYER_LOWER]   = {ENCODER_CCW_CW(KC_MS_WH_DOWN, KC_MS_WH_UP), ENCODER_CCW_CW(KC_LEFT, KC_RGHT)},
+    [LAYER_RAISE]   = {ENCODER_CCW_CW(KC_MPRV, KC_MNXT), ENCODER_CCW_CW(KC_MNXT, KC_MPRV)},
 };
 #endif
 
@@ -86,6 +90,20 @@ const uint16_t PROGMEM encoder_map[4][NUM_ENCODERS][NUM_DIRECTIONS] = {
 static painter_image_handle_t my_logo = NULL;
 static painter_device_t       display = NULL;
 static uint8_t                last_layer = 255;
+static bool                   display_on = true;
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    if (keycode == KC_DISP_TOG && record->event.pressed) {
+        if (!display) return true;
+        display_on = !display_on;
+        qp_power(display, display_on);
+        if (display_on) {
+            last_layer = 255;
+            layer_state_set_user(layer_state);
+        }
+    }
+    return true;
+}
 
 #define RGB565(r, g, b) ((((r) & 0xF8) << 8) | (((g) & 0xFC) << 3) | ((b) >> 3))
 
@@ -113,7 +131,7 @@ static inline void rgb565_to_hsv(uint16_t color, uint8_t *h, uint8_t *s, uint8_t
 }
 
 void update_display_ui(uint8_t layer) {
-    if (!display) return;
+    if (!display || !display_on) return;
 
     // 1. Get the RGB565 color from our theme
     uint16_t color = (layer < 4) ? layer_colors[layer] : 0;
