@@ -92,14 +92,34 @@ static painter_device_t       display = NULL;
 static uint8_t                last_layer = 255;
 static bool                   display_on = true;
 
+static void init_display(void) {
+    if (display) return;
+
+    display = qp_gc9a01_make_spi_device(240, 240, LCD_CS_PIN, LCD_DC_PIN, LCD_RST_PIN, 8, 3);
+    qp_init(display, QP_ROTATION_0);
+    if (!my_logo) my_logo = qp_load_image_mem(&gfx_logo);
+    if (my_logo) qp_drawimage(display, 0, 0, my_logo);
+}
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (keycode == KC_DISP_TOG && record->event.pressed) {
-        if (!display) return true;
         display_on = !display_on;
-        qp_power(display, display_on);
-        if (display_on) {
-            last_layer = 255;
-            layer_state_set_user(layer_state);
+        if (!display_on) {
+            if (display) {
+                // Clear the screen before powering down so the toggle is a full blank.
+                qp_circle(display, 120, 120, 170, 0, 0, 0, true);
+                qp_flush(display);
+                qp_power(display, false);
+            }
+        } else {
+            init_display();
+            if (display) {
+                qp_power(display, true);
+                qp_init(display, QP_ROTATION_0);
+                if (my_logo) qp_drawimage(display, 0, 0, my_logo);
+                last_layer = 255;
+                layer_state_set_user(layer_state);
+            }
         }
     }
     return true;
@@ -167,14 +187,8 @@ void update_display_ui(uint8_t layer) {
 layer_state_t layer_state_set_user(layer_state_t state) {
     uint8_t current_layer = get_highest_layer(state);
 
-    if (!display) {
-        // Mode 3 and 8MHz clock for maximum RP2040 stability/speed
-        display = qp_gc9a01_make_spi_device(240, 240, LCD_CS_PIN, LCD_DC_PIN, LCD_RST_PIN, 8, 3);
-        qp_init(display, QP_ROTATION_0);
-
-        // Draw background logo ONCE
-        if (!my_logo) my_logo = qp_load_image_mem(&gfx_logo);
-        if (my_logo) qp_drawimage(display, 0, 0, my_logo);
+    if (display_on && !display) {
+        init_display();
     }
 
     if (current_layer != last_layer) {
