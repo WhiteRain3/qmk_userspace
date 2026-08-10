@@ -3,6 +3,22 @@
 #include "generated/logo.qgf.h"
 #include "quantum/color.h"
 
+// Provide fallbacks for optional keycodes so the keymap compiles even if
+// corresponding features aren't enabled by the build system (Actions may
+// run against a QMK build configuration that doesn't enable every feature).
+#ifndef RGB_TOG
+#define RGB_TOG KC_NO
+#define RGB_RMOD KC_NO
+#define RGB_MOD KC_NO
+#define RGB_VAD KC_NO
+#define RGB_VAI KC_NO
+#endif
+
+#ifndef KC_MS_WH_DOWN
+#define KC_MS_WH_DOWN KC_NO
+#define KC_MS_WH_UP KC_NO
+#endif
+
 // 1. LAYER DEFINITIONS
 enum dilemma_keymap_layers {
     LAYER_BASE = 0,
