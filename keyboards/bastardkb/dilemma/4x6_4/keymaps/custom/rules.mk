@@ -5,6 +5,10 @@ TAP_DANCE_ENABLE = yes
 
 # Quantum Painter Configuration
 POINTING_DEVICE_ENABLE = yes
+# Enable mousekey for wheel keycodes used in encoder mappings
+MOUSEKEY_ENABLE = yes
+# Enable RGB light keycodes (RGB_TOG, RGB_MOD, etc.) used in this keymap
+RGBLIGHT_ENABLE = yes
 QUANTUM_PAINTER_ENABLE = yes
 QUANTUM_PAINTER_DRIVERS += gc9a01_spi
 QUANTUM_PAINTER_GEOMETRY_ENABLE = yes
